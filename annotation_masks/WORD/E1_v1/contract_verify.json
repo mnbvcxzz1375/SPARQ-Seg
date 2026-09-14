@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "errors": [],
+  "phase0_git_commit": "ea4921f41a70c559fe3808872d4f497226ee11c7",
+  "phase0_tag": "phase0-v1.1",
+  "num_packs": 12,
+  "min_pi_overall": 0.075875
+}
