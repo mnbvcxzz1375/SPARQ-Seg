@@ -247,7 +247,14 @@ def main() -> int:
         generator=torch.Generator().manual_seed(args.optimization_seed),
     )
 
-    model = UNet3D_ProgCon(in_chns=1, class_num=17).to(device)
+    params = {
+        "in_chns": 1,
+        "class_num": 17,
+        "feature_chns": [16, 32, 64, 128],
+        "dropout": [0, 0, 0.1, 0.2],
+        "trilinear": True,
+    }
+    model = UNet3D_ProgCon(params).to(device)
     hadfl = HADFLoss(num_classes=17)
     opt = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-4)
 
