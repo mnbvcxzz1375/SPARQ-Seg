@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+.DS_Store
+
+# data / artifacts
+datasets/
+data/
+*.nii
+*.nii.gz
+*.npy
+*.npz
+!tests/fixtures/**/*.npz
+checkpoints/
+runs/
+exp/
+outputs/
+wandb/
+*.pth
+*.pt
+*.ckpt
+
+# secrets
+.env
+*.pem
