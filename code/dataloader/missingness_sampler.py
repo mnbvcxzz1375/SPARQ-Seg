@@ -56,6 +56,7 @@ class MissingnessSampler:
         longtail_lambda: float | None = None,
         n_sites: int = 3,
         conditional_strength: float = 1.0,
+        uniform_blend: float | None = None,
     ) -> None:
         if num_classes <= 1:
             raise ValueError("num_classes must be > 1")
@@ -81,9 +82,18 @@ class MissingnessSampler:
         self.conditional_strength = float(conditional_strength)
 
         if longtail_lambda is None:
-            self.longtail_lambda = 0.9 if severity == "moderate" else 1.8
+            self.longtail_lambda = 1.4 if severity == "moderate" else 2.2
         else:
             self.longtail_lambda = float(longtail_lambda)
+
+        # Lower α keeps structured patterns distinguishable from MCAR while
+        # still protecting fixed-k positivity (π_min ≥ floor).
+        if uniform_blend is None:
+            self.uniform_blend = 0.55 if severity == "moderate" else 0.40
+        else:
+            self.uniform_blend = float(uniform_blend)
+        if not (0.0 <= self.uniform_blend < 1.0):
+            raise ValueError("uniform_blend must be in [0, 1)")
 
     def generate(
         self,
@@ -242,7 +252,7 @@ class MissingnessSampler:
         s = s / s.max(axis=1, keepdims=True)
         # Uniform blend α controls severity while protecting positivity.
         # moderate: stronger overlap; severe: more structure, still no true zeros.
-        alpha = 0.72 if self.severity == "moderate" else 0.55
+        alpha = self.uniform_blend
         s = (1.0 - alpha) * s + alpha
         s = np.maximum(s, self.positivity_floor * 0.5)
         return s

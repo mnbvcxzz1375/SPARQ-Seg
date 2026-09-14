@@ -134,7 +134,13 @@ class TestSamplerContracts(unittest.TestCase):
         # selection_score still not equal to inclusion
         self.assertFalse(np.allclose(out.selection_score, out.inclusion_prob))
 
-    def test_generate_word_masks_pack(self):
+    def test_structured_coverage_distinguishable_from_random(self):
+        """E1 needs pattern signal, not only MCAR after strong blending."""
+        n = 80
+        rand = MissingnessSampler(16, 2, mode="random", seed=0).generate([f"v{i}" for i in range(n)])
+        longtail = MissingnessSampler(16, 2, mode="longtail", seed=0).generate([f"v{i}" for i in range(n)])
+        self.assertGreater(coverage_gini(longtail.mask), coverage_gini(rand.mask) + 0.02)
+        self.assertGreaterEqual(longtail.inclusion_prob.min(), 0.05 - 1e-3)
         packs = generate_word_masks(
             num_volumes=12,
             num_classes=16,
