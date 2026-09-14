@@ -24,9 +24,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from code.dataloader.missingness_sampler import MissingnessSampler
-from code.utils.annotation_matrix import class_coverage, coverage_entropy, coverage_gini
-from code.utils.inclusion_prob import summarize_weights
+from sparq.dataloader.missingness_sampler import MissingnessSampler
+from sparq.utils.annotation_matrix import class_coverage, coverage_entropy, coverage_gini
+from sparq.utils.inclusion_prob import summarize_weights
 
 PATTERN_MAP = {
     "random": "random",

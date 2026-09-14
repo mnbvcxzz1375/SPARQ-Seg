@@ -16,8 +16,8 @@ from typing import Any, Literal
 
 import numpy as np
 
-from code.utils.annotation_matrix import pattern_meta
-from code.utils.inclusion_prob import (
+from sparq.utils.annotation_matrix import pattern_meta
+from sparq.utils.inclusion_prob import (
     monte_carlo_inclusion_prob,
     uniform_inclusion_prob,
 )

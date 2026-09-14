@@ -34,7 +34,7 @@ Baseline: PL-Seg — Li et al., *Medical Image Analysis* 108 (2026) 103885
 ## Phase-0 layout (target)
 
 ```text
-code/
+sparq/
   dataloader/
     missingness_sampler.py
     partial_dataset.py

@@ -14,16 +14,16 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from code.dataloader.missingness_sampler import MissingnessSampler, generate_word_masks
-from code.dataloader.partial_dataset import (
+from sparq.dataloader.missingness_sampler import MissingnessSampler, generate_word_masks
+from sparq.dataloader.partial_dataset import (
     PartialLabelView,
     apply_annotation_mask,
     load_mask_pack,
     patch_presence_mask,
     save_mask_pack,
 )
-from code.utils.annotation_matrix import class_coverage, coverage_gini, pattern_meta
-from code.utils.inclusion_prob import (
+from sparq.utils.annotation_matrix import class_coverage, coverage_gini, pattern_meta
+from sparq.utils.inclusion_prob import (
     monte_carlo_inclusion_prob,
     summarize_weights,
     uniform_inclusion_prob,

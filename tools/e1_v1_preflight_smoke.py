@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from code.dataloader.partial_dataset import apply_annotation_mask, patch_presence_mask
+from sparq.dataloader.partial_dataset import apply_annotation_mask, patch_presence_mask
 
 
 def sha256_file(path: Path) -> str:
