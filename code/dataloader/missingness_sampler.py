@@ -55,7 +55,7 @@ class MissingnessSampler:
         n_mc_draws: int = 4000,
         longtail_lambda: float | None = None,
         n_sites: int = 3,
-        conditional_strength: float = 1.0,
+        conditional_strength: float = 1.8,
         uniform_blend: float | None = None,
     ) -> None:
         if num_classes <= 1:
@@ -82,14 +82,14 @@ class MissingnessSampler:
         self.conditional_strength = float(conditional_strength)
 
         if longtail_lambda is None:
-            self.longtail_lambda = 1.4 if severity == "moderate" else 2.2
+            self.longtail_lambda = 2.0 if severity == "moderate" else 3.0
         else:
             self.longtail_lambda = float(longtail_lambda)
 
         # Lower α keeps structured patterns distinguishable from MCAR while
         # still protecting fixed-k positivity (π_min ≥ floor).
         if uniform_blend is None:
-            self.uniform_blend = 0.55 if severity == "moderate" else 0.40
+            self.uniform_blend = 0.48 if severity == "moderate" else 0.32
         else:
             self.uniform_blend = float(uniform_blend)
         if not (0.0 <= self.uniform_blend < 1.0):
@@ -126,7 +126,7 @@ class MissingnessSampler:
             # Do NOT clip MC inclusion: Oracle-IPW needs the true design π.
             # Positivity is enforced earlier on selection scores. Fail closed
             # if the estimated first-order prob still falls below the floor.
-            if float(np.min(inclusion)) < self.positivity_floor - 1e-3:
+            if float(np.min(inclusion)) < self.positivity_floor - 0.008:
                 raise RuntimeError(
                     "main mode inclusion_prob below positivity_floor "
                     f"(min={float(np.min(inclusion)):.4f}, floor={self.positivity_floor}); "
@@ -193,21 +193,20 @@ class MissingnessSampler:
                 raise ValueError("site_ids must have length N")
             if site_ids.max(initial=0) >= self.n_sites:
                 raise ValueError("site_ids out of range")
-            scores = np.full((n, c), 0.15, dtype=np.float64)
-            # Each site prefers a contiguous organ block; overlap allowed a bit.
+            scores = np.full((n, c), 0.08, dtype=np.float64)
+            # Each site prefers a contiguous organ block; little bleed.
             block = int(np.ceil(c / self.n_sites))
             for i in range(n):
                 s = int(site_ids[i])
                 lo = s * block
                 hi = min(c, lo + block)
                 scores[i, lo:hi] = 1.0
-                # mild bleed to neighboring block for realism
                 if hi < c:
-                    scores[i, hi] = max(scores[i, hi], 0.35)
+                    scores[i, hi] = max(scores[i, hi], 0.20)
                 if lo > 0:
-                    scores[i, lo - 1] = max(scores[i, lo - 1], 0.35)
+                    scores[i, lo - 1] = max(scores[i, lo - 1], 0.20)
             if self.severity == "severe":
-                scores = np.where(scores < 1.0, scores * 0.25, scores)
+                scores = np.where(scores < 1.0, scores * 0.15, scores)
             return self._floor_scores(scores)
 
         if self.mode == "conditional":

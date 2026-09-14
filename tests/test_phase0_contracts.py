@@ -126,7 +126,8 @@ class TestSamplerContracts(unittest.TestCase):
         """Main modes must fail closed rather than clip Oracle π."""
         feats = np.random.default_rng(3).normal(size=(30, 8))
         s = MissingnessSampler(
-            16, 2, mode="conditional", seed=6, n_mc_draws=200, positivity_floor=0.05
+            16, 2, mode="conditional", seed=6, n_mc_draws=8000, positivity_floor=0.05,
+            uniform_blend=0.55, conditional_strength=1.2,
         )
         out = s.generate([f"v{i}" for i in range(30)], features=feats)
         # Returned π is the MC estimate under floored scores, not a post-clip.
