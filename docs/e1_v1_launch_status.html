@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>E1-v1 12 臂提交状态</title>
+<style>
+:root{--bg:#0f1419;--card:#1a222d;--line:#2a3441;--ink:#e8eef5;--mut:#9aabbf;--ok:#3ecf8e;--warn:#e6b84d;--accent:#3d9cf0;--mono:Cascadia Code,Consolas,monospace;--sans:Segoe UI,PingFang SC,Microsoft YaHei,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;padding:32px 24px 64px}
+.wrap{max-width:960px;margin:0 auto}
+h1{font-size:24px;margin-bottom:8px}
+.lede{color:var(--mut);margin-bottom:20px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid var(--warn);color:var(--warn);margin:0 8px 8px 0}
+.badge.ok{border-color:var(--ok);color:var(--ok)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
+h2{font-size:17px;margin:26px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+th{background:#161c24}
+td{color:var(--mut)}
+code{font-family:var(--mono);font-size:12px;background:#161c24;border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.pass{color:var(--ok)}
+ul{margin-left:1.2em;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">Slurm array 0-11%2</span>
+  <span class="badge">job 377525</span>
+  <span class="badge ok">dry-run 12/12</span>
+  <span class="badge ok">preflight GO</span>
+  <h1>E1-v1 正式 12 臂已提交</h1>
+  <p class="lede">
+    冻结 mask pack + 固定 optimization_seed=42 + Slurm job array。mask seed 是实验变量；
+    propensity / Stage II 关闭。提交后当前为 PENDING（等 A800 空位）。
+  </p>
+
+  <div class="card">
+    <strong>提交命令</strong>
+    <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%2 scripts/e1_v1/submit_e1_v1.slurm</code></p>
+    <p style="color:var(--mut)">JOBID <code>377525</code> · partition <code>hpc_gpu</code> · 16 CPU / 128G / 1 GPU · 72h</p>
+  </div>
+
+  <h2>Dry-run 结论</h2>
+  <ul>
+    <li><span class="pass">12 tasks = 12 unique arms</span></li>
+    <li>set(launcher) = set(E1-v1 manifest packs)</li>
+    <li>全部 pack SHA256 与 manifest 一致</li>
+    <li>opt_seed 固定 42；code pin <code>b9b4e44</code></li>
+  </ul>
+
+  <h2>12 臂</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Arm</th><th>Output</th></tr></thead>
+    <tbody>
+      <tr><td>0–2</td><td>random_moderate_s0/s1/s2</td><td><code>runs/E1_v1/random_moderate_s*</code></td></tr>
+      <tr><td>3–5</td><td>longtail_moderate_s0/s1/s2</td><td><code>runs/E1_v1/longtail_moderate_s*</code></td></tr>
+      <tr><td>6–8</td><td>sitelike_moderate_s0/s1/s2</td><td><code>runs/E1_v1/sitelike_moderate_s*</code></td></tr>
+      <tr><td>9–11</td><td>conditional_moderate_s0/s1/s2</td><td><code>runs/E1_v1/conditional_moderate_s*</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Fail-closed 规则</h2>
+  <ul>
+    <li>已有 <code>DONE</code> → exit 0</li>
+    <li>非空未完成目录 → exit 2（禁止覆盖）</li>
+    <li>pack SHA 不匹配 → 运行时 assert 失败</li>
+    <li>crop 中出现 hidden class → RuntimeError</li>
+    <li>NaN loss → 写 <code>FAILED</code> 并退出</li>
+    <li>不因中期 Dice 差而停臂；只因 OOM/节点/FS/NaN/合同违例重跑</li>
+  </ul>
+
+  <h2>训练协议</h2>
+  <ul>
+    <li>PL-Seg UNet3D_ProgCon + HADFL + COCL + PSD ramp</li>
+    <li>labelsTr_All → 按 E1 mask 置 hidden 为 0</li>
+    <li>500 epochs · batch 2 · patch 128³×96 · lr 0.01 SGD</li>
+    <li>输出 <code>run_manifest.json</code> / <code>best_model.pth</code> / <code>DONE</code></li>
+  </ul>
+
+  <h2>观察命令</h2>
+  <p style="color:var(--mut)"><code>squeue -u heyecheng</code> ·
+  <code>tail slurm_logs/e1_377525_*.out</code> ·
+  <code>ls runs/E1_v1/*/DONE</code></p>
+</div>
+</body>
+</html>
