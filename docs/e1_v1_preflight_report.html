@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>E1-v1 Preflight Gate · GO</title>
+<style>
+:root{--bg:#0f1419;--card:#1a222d;--line:#2a3441;--ink:#e8eef5;--mut:#9aabbf;--ok:#3ecf8e;--accent:#3d9cf0;--mono:Cascadia Code,Consolas,monospace;--sans:Segoe UI,PingFang SC,Microsoft YaHei,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;padding:32px 24px 64px}
+.wrap{max-width:920px;margin:0 auto}
+h1{font-size:24px;margin-bottom:8px}
+.lede{color:var(--mut);margin-bottom:24px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid var(--ok);color:var(--ok);margin-right:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:14px 0}
+h2{font-size:17px;margin:28px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0 16px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:#161c24;color:var(--ink)}
+td{color:var(--mut)}
+.pass{color:var(--ok);font-weight:600}
+code{font-family:var(--mono);font-size:12px;background:#161c24;border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.num{font-family:var(--mono);font-size:22px;color:var(--ok)}
+.small{font-size:12px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <span class="badge">GO = true</span>
+    <span class="badge">40902 GPU1</span>
+    <span class="badge">2026-09-14</span>
+  </div>
+  <h1>E1-v1 Preflight Gate</h1>
+  <p class="lede">
+    在 12 次学校 A800 长训练之前，对冻结的 E1-v1 mask pack 做 partial-label 合同泄漏检查。
+    不看 Dice、不改 mask、不启动 propensity。Random-s0 与 Conditional-s0 两臂均通过。
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="small">ΔL（hidden GT 反事实）</div>
+      <div class="num">0.0 / 0.0</div>
+      <div class="small">random_s0 / conditional_s0</div>
+    </div>
+    <div class="card">
+      <div class="small">ΔL（visible GT 正对照）</div>
+      <div class="num">1.31 / 1.28</div>
+      <div class="small">说明 GT 确实进入了 loss</div>
+    </div>
+  </div>
+
+  <h2>七项检查</h2>
+  <table>
+    <thead><tr><th>检查</th><th>Random-s0</th><th>Conditional-s0</th></tr></thead>
+    <tbody>
+      <tr><td>Pack identity SHA256</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>Volume-mask alignment</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>Partial target purity</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>Presence purity（presence ≤ annotation）</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>Multi-scale purity s1/s2/s3</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>HADFL state isolation</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>Counterfactual invariance</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+      <tr><td>Train smoke finite（20 steps）</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+    </tbody>
+  </table>
+
+  <h2>关键修复</h2>
+  <div class="card">
+    <p><code>presence_mask</code> 现在执行 <code>presence &= annotation_mask</code>。
+    若从 full GT 直接算 presence 再进训练，即使 payload 没有 <code>full_label</code>，也会泄漏 hidden organ。</p>
+  </div>
+
+  <h2>冻结信息</h2>
+  <ul style="color:var(--mut);margin-left:1.2em">
+    <li>Code commit: <code>65a8e8b</code></li>
+    <li>Pack source: <code>ea4921f</code> / tag <code>phase0-v1.1</code></li>
+    <li>mask_seed=0 · optimization_seed=42 · dataloader_generator_seed=42 · num_workers=0</li>
+    <li>Artifact: <code>artifacts/e1_v1_preflight.json</code></li>
+    <li>Note: <code>docs/E1_V1_PREFLIGHT.md</code></li>
+  </ul>
+
+  <h2>下一步</h2>
+  <p style="color:var(--mut)">
+    <strong style="color:var(--ink)">允许</strong>：学校 A800 提交 12 个 E1 长训练。<br/>
+    <strong style="color:var(--ink)">禁止</strong>：覆盖 E1-v1 pack；在 E1 现象门前写 propensity / Stage II。
+  </p>
+</div>
+</body>
+</html>

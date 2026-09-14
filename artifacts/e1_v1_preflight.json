@@ -1,0 +1,3167 @@
+{
+  "protocol": "WORD_E1_v1_preflight",
+  "utc": "2026-09-14T09:19:38.350092+00:00",
+  "phase0_git_commit": "ea4921f41a70c559fe3808872d4f497226ee11c7",
+  "mask_seed": 0,
+  "optimization_seed": 42,
+  "dataloader_generator_seed": 42,
+  "num_workers_smoke": 0,
+  "torch": "2.10.0+cu128",
+  "cuda": "12.8",
+  "device": "cuda:0",
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "arms": [
+    {
+      "arm": "random_s0",
+      "pack": "random_moderate_s0.npz",
+      "pack_sha256": "5be5f332d35b201e543e6f4c0355dab882f8447d6d63f0b6fd97d4daecda8e65",
+      "pack_identity_ok": true,
+      "device": "cuda:0",
+      "structure_audit": [
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            153,
+            66,
+            35
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            219,
+            37,
+            98
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            3,
+            5,
+            8,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            221,
+            106,
+            36
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            3,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            106,
+            8,
+            10
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            198,
+            52,
+            73
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            5
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            5
+          ],
+          "full_patch_unique": [
+            1,
+            5,
+            8,
+            9,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            258,
+            88,
+            123
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            5
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            5
+          ],
+          "full_patch_unique": [
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            215,
+            104,
+            117
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            5
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            5
+          ],
+          "full_patch_unique": [
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                5
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            14,
+            19,
+            102
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            88,
+            74,
+            104
+          ],
+          "annotation_mask": [
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            1
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            1
+          ],
+          "full_patch_unique": [
+            1,
+            5,
+            6,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                1
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                1
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                1
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            105,
+            76,
+            109
+          ],
+          "annotation_mask": [
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            1
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            1
+          ],
+          "full_patch_unique": [
+            1,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                1
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                1
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                1
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            70,
+            18,
+            35
+          ],
+          "annotation_mask": [
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            112,
+            137,
+            53
+          ],
+          "annotation_mask": [
+            1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            4,
+            9,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            246,
+            69,
+            62
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            3,
+            5,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            288,
+            60,
+            49
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            36,
+            31,
+            29
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            76,
+            140,
+            109
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            1,
+            4,
+            10
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            246,
+            149,
+            67
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            3
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            3
+          ],
+          "full_patch_unique": [
+            3,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            286,
+            130,
+            103
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            3
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            3
+          ],
+          "full_patch_unique": [
+            2,
+            3,
+            5,
+            8,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            391,
+            58,
+            29
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            324,
+            184,
+            73
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            3
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            3
+          ],
+          "full_patch_unique": [
+            2,
+            3
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                3
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        }
+      ],
+      "counterfactual": {
+        "loss_hidden_base": 1.314375400543213,
+        "loss_hidden_perturb": 1.314375400543213,
+        "delta_loss_hidden": 0.0,
+        "delta_grad_hidden": 0.0,
+        "grad_scale": 0.3480595052242279,
+        "active_classes": [
+          11
+        ],
+        "active_after_hidden": [
+          11
+        ],
+        "hidden_classes": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          12,
+          14,
+          15,
+          16
+        ],
+        "queue_hidden_delta_should_be_zero": true,
+        "visible_classes_in_crop": [
+          11
+        ],
+        "delta_loss_visible": 1.314375400543213,
+        "pass_hidden_loss": true,
+        "pass_hidden_grad": true,
+        "pass_visible": true
+      },
+      "train_smoke": {
+        "ok": true,
+        "n_steps": 20,
+        "last": {
+          "step": 19,
+          "hadfl": 1.3007876873016357,
+          "cocr": 2.833165407180786,
+          "psd": 0.0,
+          "total": 1.584104299545288,
+          "grad_norm": 0.2966768741607666,
+          "active": [
+            3
+          ],
+          "finite": true
+        }
+      },
+      "checks": {
+        "pack_identity": true,
+        "volume_mask_alignment": true,
+        "partial_target_purity": true,
+        "presence_purity": true,
+        "multiscale_purity": true,
+        "hadfl_state_isolation": true,
+        "counterfactual_invariance": true,
+        "train_smoke_finite": true
+      },
+      "pass": true,
+      "elapsed_sec": 35.55616307258606
+    },
+    {
+      "arm": "conditional_s0",
+      "pack": "conditional_moderate_s0.npz",
+      "pack_sha256": "ebabe1a319ba31bd49299c24dfd9a66f3bd8cf9d49a5d71dd8f86432629c3860",
+      "pack_identity_ok": true,
+      "device": "cuda:0",
+      "structure_audit": [
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            136,
+            70,
+            76
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            10
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            10
+          ],
+          "full_patch_unique": [
+            1,
+            5,
+            8,
+            9,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                10
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                10
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                10
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            76,
+            84,
+            116
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            6,
+            10
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            6,
+            10
+          ],
+          "full_patch_unique": [
+            1,
+            4,
+            5,
+            6,
+            8,
+            9,
+            10
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                6,
+                10
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                6,
+                10
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                6,
+                10
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            221,
+            106,
+            36
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            10
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            10
+          ],
+          "full_patch_unique": [
+            3,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                10
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                10
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                10
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0002",
+          "origin": [
+            106,
+            8,
+            10
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            228,
+            58,
+            53
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            9,
+            10,
+            11,
+            13
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            243,
+            63,
+            61
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11
+          ],
+          "full_patch_unique": [
+            3,
+            9,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            215,
+            104,
+            117
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            11,
+            12
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            11,
+            12
+          ],
+          "full_patch_unique": [
+            1,
+            2,
+            3,
+            5,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                11,
+                12
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                11,
+                12
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                11,
+                12
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0003",
+          "origin": [
+            14,
+            19,
+            102
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            130,
+            92,
+            27
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "unique_partial": [
+            14
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            14
+          ],
+          "full_patch_unique": [
+            10,
+            11,
+            13,
+            14
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                14
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                14
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                14
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            142,
+            72,
+            117
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            7
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            7
+          ],
+          "full_patch_unique": [
+            1,
+            5,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                7
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                7
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                7
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            70,
+            18,
+            35
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0004",
+          "origin": [
+            112,
+            137,
+            53
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            4,
+            9,
+            10,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            257,
+            78,
+            119
+          ],
+          "annotation_mask": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            2,
+            5
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            2,
+            5
+          ],
+          "full_patch_unique": [
+            1,
+            2,
+            3,
+            5,
+            8,
+            11,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                2,
+                5
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                2,
+                5
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                2,
+                5
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            303,
+            123,
+            108
+          ],
+          "annotation_mask": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            2,
+            5
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            2,
+            5
+          ],
+          "full_patch_unique": [
+            2,
+            3,
+            5,
+            11
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                2,
+                5
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                2,
+                5
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                2,
+                5
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            36,
+            31,
+            29
+          ],
+          "annotation_mask": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0005",
+          "origin": [
+            76,
+            140,
+            109
+          ],
+          "annotation_mask": [
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            1,
+            4,
+            10
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            136,
+            150,
+            110
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            4,
+            12
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            4,
+            12
+          ],
+          "full_patch_unique": [
+            1,
+            4,
+            9,
+            10,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                4,
+                12
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                4,
+                12
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                4,
+                12
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            143,
+            147,
+            125
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [
+            4,
+            12
+          ],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [
+            4,
+            12
+          ],
+          "full_patch_unique": [
+            1,
+            4,
+            9,
+            10,
+            12
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [
+                4,
+                12
+              ],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [
+                4,
+                12
+              ],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [
+                4,
+                12
+              ],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            391,
+            58,
+            29
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        },
+        {
+          "volume_id": "word_0013",
+          "origin": [
+            324,
+            184,
+            73
+          ],
+          "annotation_mask": [
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          "presence_mask": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "unique_partial": [],
+          "hidden_in_partial": [],
+          "active_HADFL_classes": [],
+          "full_patch_unique": [
+            2,
+            3
+          ],
+          "multiscale": {
+            "s1": {
+              "unique": [],
+              "hidden": []
+            },
+            "s2": {
+              "unique": [],
+              "hidden": []
+            },
+            "s3": {
+              "unique": [],
+              "hidden": []
+            }
+          },
+          "ok": true
+        }
+      ],
+      "counterfactual": {
+        "loss_hidden_base": 1.284367322921753,
+        "loss_hidden_perturb": 1.284367322921753,
+        "delta_loss_hidden": 0.0,
+        "delta_grad_hidden": 0.0,
+        "grad_scale": 0.23177722096443176,
+        "active_classes": [
+          10
+        ],
+        "active_after_hidden": [
+          10
+        ],
+        "hidden_classes": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ],
+        "queue_hidden_delta_should_be_zero": true,
+        "visible_classes_in_crop": [
+          10
+        ],
+        "delta_loss_visible": 1.284367322921753,
+        "pass_hidden_loss": true,
+        "pass_hidden_grad": true,
+        "pass_visible": true
+      },
+      "train_smoke": {
+        "ok": true,
+        "n_steps": 20,
+        "last": {
+          "step": 19,
+          "hadfl": 1.286653995513916,
+          "cocr": 2.8331634998321533,
+          "psd": 0.0,
+          "total": 1.5699703693389893,
+          "grad_norm": 0.222789466381073,
+          "active": [
+            4,
+            12
+          ],
+          "finite": true
+        }
+      },
+      "checks": {
+        "pack_identity": true,
+        "volume_mask_alignment": true,
+        "partial_target_purity": true,
+        "presence_purity": true,
+        "multiscale_purity": true,
+        "hadfl_state_isolation": true,
+        "counterfactual_invariance": true,
+        "train_smoke_finite": true
+      },
+      "pass": true,
+      "elapsed_sec": 33.24448227882385
+    }
+  ],
+  "go": true
+}
