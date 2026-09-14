@@ -272,15 +272,16 @@ def main() -> int:
                 opt.zero_grad(set_to_none=True)
                 outputs = model(img)
                 if isinstance(outputs, (tuple, list)):
-                    logits = outputs[0]
-                    rest = outputs
+                    raw_list = list(outputs)
                 else:
-                    logits = outputs
-                    rest = [outputs]
+                    raw_list = [outputs]
+                # HADFLoss expects softmax probabilities (PL-Seg train_PLSeg.py)
+                soft_list = [torch.softmax(t, dim=1) for t in raw_list]
+                logits = soft_list[0]
+                rest = soft_list
                 sup = hadfl(logits, onehot)
                 cocr = cocr_loss(logits)
-                psd = psd_loss(list(rest), cw) if isinstance(rest, (tuple, list)) else logits_zero(logits)
-                # HADFLoss may return tensor only
+                psd = psd_loss(list(rest), cw)
                 if isinstance(sup, (tuple, list)):
                     sup = sup[0]
                 total = sup + cocr + psd
@@ -295,7 +296,7 @@ def main() -> int:
             logf.flush()
             print(line, end="", flush=True)
             if not np.isfinite(avg):
-                (out / "FAILED").write_text("non-finite loss\n", encoding="utf-8")
+                (out / "FAILED").write_text(f"non-finite loss at epoch {epoch}\n", encoding="utf-8")
                 return 4
             if avg < best_loss:
                 best_loss = avg
