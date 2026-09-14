@@ -26,20 +26,21 @@ ul{margin-left:1.2em;color:var(--mut)}
 </head>
 <body>
 <div class="wrap">
-  <span class="badge">Slurm array 0-11%2</span>
-  <span class="badge">job 377525</span>
+  <span class="badge">gpu_4090 array 0-11%4</span>
+  <span class="badge">job 377527</span>
   <span class="badge ok">dry-run 12/12</span>
   <span class="badge ok">preflight GO</span>
-  <h1>E1-v1 正式 12 臂已提交</h1>
+  <h1>E1-v1 正式 12 臂（4090D）</h1>
   <p class="lede">
-    冻结 mask pack + 固定 optimization_seed=42 + Slurm job array。mask seed 是实验变量；
-    propensity / Stage II 关闭。提交后当前为 PENDING（等 A800 空位）。
+    已从 A800 <code>hpc_gpu</code> 改投学校 <strong>gpu_4090（RTX 4090D）</strong>。
+    资源按 4090 分区硬约束：6 CPU / 64G / 1 GPU；batch=1 降低 OOM 风险。
+    旧 A800 job 377525 已 scancel。
   </p>
 
   <div class="card">
     <strong>提交命令</strong>
-    <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%2 scripts/e1_v1/submit_e1_v1.slurm</code></p>
-    <p style="color:var(--mut)">JOBID <code>377525</code> · partition <code>hpc_gpu</code> · 16 CPU / 128G / 1 GPU · 72h</p>
+    <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%4 scripts/e1_v1/submit_e1_v1.slurm</code></p>
+    <p style="color:var(--mut)">JOBID <code>377527</code> · partition <code>gpu_4090</code> · 6 CPU / 64G / 1 GPU · 96h</p>
   </div>
 
   <h2>Dry-run 结论</h2>
@@ -75,7 +76,7 @@ ul{margin-left:1.2em;color:var(--mut)}
   <ul>
     <li>PL-Seg UNet3D_ProgCon + HADFL + COCL + PSD ramp</li>
     <li>labelsTr_All → 按 E1 mask 置 hidden 为 0</li>
-    <li>500 epochs · batch 2 · patch 128³×96 · lr 0.01 SGD</li>
+    <li>500 epochs · batch 1 · patch 128³×96 · lr 0.01 SGD · 200 samples/epoch</li>
     <li>输出 <code>run_manifest.json</code> / <code>best_model.pth</code> / <code>DONE</code></li>
   </ul>
 

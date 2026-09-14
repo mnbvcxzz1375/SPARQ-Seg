@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=e1_v1
-#SBATCH --partition=hpc_gpu
+#SBATCH --partition=gpu_4090
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128G
-#SBATCH --time=72:00:00
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=64G
+#SBATCH --time=96:00:00
 #SBATCH --output=slurm_logs/e1_%A_%a.out
 #SBATCH --error=slurm_logs/e1_%A_%a.err
 set -euo pipefail
@@ -70,9 +70,9 @@ $PY "$ROOT/sparq/e1/train_e1_arm.py" \
   --labels-full-root "$WORD/labelsTr_All" \
   --out-dir "$OUT" \
   --epoches 500 \
-  --batch-size 2 \
+  --batch-size 1 \
   --lr 0.01 \
-  --samples-per-epoch 250 \
+  --samples-per-epoch 200 \
   --optimization-seed "$OPT_SEED" \
   --expected-code-sha "$EXPECTED_SHA"
 
