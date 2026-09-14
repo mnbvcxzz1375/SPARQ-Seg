@@ -21,7 +21,7 @@ def sha256_file(path: Path) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", required=True)
-    ap.add_argument("--expected-code-sha", default="b4db9db3b85fcfef1042a0c9a83306fa32c0cbd1")
+    ap.add_argument("--expected-code-sha", default="b9b4e44b83316160a884d4fb63e226a23f1dda9c")
     args = ap.parse_args()
     root = Path(args.root)
     pack_root = root / "annotation_masks" / "WORD" / "E1_v1"

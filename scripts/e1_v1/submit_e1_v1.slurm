@@ -14,7 +14,7 @@ PACK_ROOT=$ROOT/annotation_masks/WORD/E1_v1
 ARMS=$ROOT/scripts/e1_v1/arms.tsv
 PY=/public/home/heyecheng/odin2026_local_baseline/.venv/bin/python
 WORD=/public/share/td20230405/WORD
-EXPECTED_SHA=${EXPECTED_SHA:-b4db9db3b85fcfef1042a0c9a83306fa32c0cbd1}
+EXPECTED_SHA=${EXPECTED_SHA:-b9b4e44b83316160a884d4fb63e226a23f1dda9c}
 OPT_SEED=42
 
 IDX=${SLURM_ARRAY_TASK_ID:?missing SLURM_ARRAY_TASK_ID}
