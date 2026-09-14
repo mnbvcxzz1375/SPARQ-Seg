@@ -203,7 +203,12 @@ def main() -> int:
     z = np.load(pack_path)
     mask = z["mask"]
 
-    git_sha = os.popen(f"git -C {Path(args.pack_root).parents[3]} rev-parse HEAD 2>/dev/null").read().strip()
+    git_sha = ""
+    try:
+        git_root = Path(__file__).resolve().parents[2]
+        git_sha = os.popen(f"git -C {git_root} rev-parse HEAD 2>/dev/null").read().strip()
+    except Exception:
+        git_sha = ""
     if args.expected_code_sha and git_sha and not git_sha.startswith(args.expected_code_sha):
         raise RuntimeError(f"code drift: {git_sha} != {args.expected_code_sha}")
 
