@@ -174,6 +174,18 @@ class TestPartialDataset(unittest.TestCase):
         self.assertFalse(np.any(partial == 2))
         self.assertTrue(np.any(partial == 3))
 
+    def test_presence_not_leaked_from_hidden_gt(self):
+        """presence from full GT must be intersected with annotation_mask."""
+        _, full = self._toy()
+        # full contains organs 1,2,3; only 1 and 3 annotated
+        amask = np.array([1, 0, 1], dtype=np.uint8)
+        # If someone mistakenly computes presence on full_label:
+        raw = patch_presence_mask(full, 3)  # would be [1,1,1]
+        safe = patch_presence_mask(full, 3, amask)
+        self.assertTrue(np.array_equal(raw, np.array([1, 1, 1], dtype=np.uint8)))
+        self.assertTrue(np.array_equal(safe, np.array([1, 0, 1], dtype=np.uint8)))
+        self.assertTrue(np.all(safe <= amask))
+
     def test_presence_vs_annotation(self):
         _, full = self._toy()
         amask = np.array([1, 1, 1], dtype=np.uint8)

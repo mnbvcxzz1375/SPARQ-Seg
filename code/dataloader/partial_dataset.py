@@ -93,13 +93,24 @@ def apply_annotation_mask(
 def patch_presence_mask(
     label_patch: np.ndarray,
     num_foreground: int,
+    annotation_mask: np.ndarray | None = None,
 ) -> np.ndarray:
-    """Binary presence of each foreground organ inside a patch label."""
+    """Binary presence of each foreground organ inside a patch label.
+
+    If `annotation_mask` is provided, presence is intersected with it
+    (`presence &= annotation`). Computing presence from full GT without this
+    intersection leaks hidden-organ information even when full_label is omitted.
+    """
     lab = np.asarray(label_patch)
     pres = np.zeros(num_foreground, dtype=np.uint8)
     for c in range(1, num_foreground + 1):
         if np.any(lab == c):
             pres[c - 1] = 1
+    if annotation_mask is not None:
+        am = np.asarray(annotation_mask, dtype=np.uint8)
+        if am.size != num_foreground:
+            raise ValueError("annotation_mask size must equal num_foreground")
+        pres = (pres & am.astype(np.uint8)).astype(np.uint8)
     return pres
 
 
@@ -150,7 +161,7 @@ class PartialLabelView:
             image=np.asarray(self.images[index]),
             partial_label=partial,
             annotation_mask=amask.copy(),
-            presence_mask=patch_presence_mask(partial, amask.size),
+            presence_mask=patch_presence_mask(partial, amask.size, amask),
             volume_id=self.volume_ids[index],
             full_label=full if oracle else None,
         )
@@ -162,20 +173,26 @@ class PartialLabelView:
             "image": np.asarray(self.images[index]),
             "partial_label": partial,
             "annotation_mask": amask.copy(),
-            "presence_mask": patch_presence_mask(partial, amask.size),
+            "presence_mask": patch_presence_mask(partial, amask.size, amask),
             "volume_id": self.volume_ids[index],
         }
 
     def assert_no_hidden_leak(self, index: int) -> None:
-        """Fail if any unannotated organ voxels survive in partial_label."""
+        """Fail if any unannotated organ voxels survive in partial_label/presence."""
         payload = self.train_sample(index)
         partial = payload["partial_label"]
         amask = payload["annotation_mask"]
+        pres = payload["presence_mask"]
         for c, ok in enumerate(amask, start=1):
             if not ok and np.any(partial == c):
                 raise AssertionError(
                     f"hidden organ {c} leaked into partial_label for volume {index}"
                 )
+        if np.any(pres > amask):
+            raise AssertionError(
+                f"presence_mask exposes hidden organs for volume {index}: "
+                f"presence={pres.tolist()} annotation={amask.tolist()}"
+            )
 
 
 def save_mask_pack(path: str, simulator_output: dict[str, Any]) -> None:
