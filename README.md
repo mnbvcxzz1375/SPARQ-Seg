@@ -54,8 +54,11 @@ tests/
 
 - [x] Remote repo linked
 - [x] Local clone at `E:\VScodeProject\SPARQ-Seg`
-- [ ] Phase-0 data layer implementation
-- [ ] E1 phenomenon experiments
+- [x] Phase-0 data layer + review
+- [x] Phase-0 commits (`f99bfc7` tag `phase0-v1.1`; pack source `ea4921f`)
+- [x] WORD E1-v1 mask pack frozen + contract verify PASS
+- [ ] 40902 GPU1 dataloader→HADFL leak smoke
+- [ ] E1 phenomenon trainings (school A800)
 - [ ] Stage I PA-HADFL
 - [ ] Stage II AOVA
 
