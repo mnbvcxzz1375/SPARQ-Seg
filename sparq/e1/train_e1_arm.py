@@ -261,7 +261,11 @@ def main() -> int:
     }
     model = UNet3D_ProgCon(params).to(device)
     hadfl = HADFLoss(num_classes=17)
-    opt = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-4)
+    # Match official train_PLSeg.py: Adam + plateau (not raw SGD).
+    opt = torch.optim.Adam(model.parameters(), betas=(0.9, 0.99), lr=args.lr)
+    sched = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        opt, mode="min", factor=0.95, patience=4, min_lr=1e-4
+    )
 
     log_path = out / "train.log"
     best_loss = float("inf")
@@ -290,13 +294,18 @@ def main() -> int:
                 if isinstance(sup, (tuple, list)):
                     sup = sup[0]
                 total = sup + cocr + psd
+                if not torch.isfinite(total):
+                    # skip explosive step; do not poison weights
+                    opt.zero_grad(set_to_none=True)
+                    continue
                 total.backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 12.0)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 5.0)
                 opt.step()
                 epoch_loss += float(total.detach())
                 nb += 1
             avg = epoch_loss / max(nb, 1)
-            line = f"epoch={epoch} loss={avg:.6f}\n"
+            sched.step(avg)
+            line = f"epoch={epoch} loss={avg:.6f} lr={opt.param_groups[0]['lr']:.6g}\n"
             logf.write(line)
             logf.flush()
             print(line, end="", flush=True)
