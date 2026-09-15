@@ -35,8 +35,10 @@ ul{margin-left:1.2em;color:var(--mut)}
     已从 A800 <code>hpc_gpu</code> 改投学校 <strong>gpu_4090（RTX 4090D）</strong>。
     资源按 4090 分区硬约束：6 CPU / 64G / 1 GPU；batch=1 降低 OOM 风险。
     旧 A800 job 377525 已 scancel。
-    <strong>2026-09-15 更新</strong>：因 epoch-16 NaN 事故（见下），全部 12 臂以修复码
-    <code>8a4169d</code> 重新提交为 <code>379410</code>；此前各批次（377527/377589/377606/378354）结果全部作废。
+    <strong>2026-09-15 更新</strong>：因 epoch-16 NaN 事故（见下），以修复码
+    <code>8a4169d</code> 重跑全部 12 臂：<code>379410</code> 学校队列跑 9 臂（array 0-8），
+    conditional 三臂本地跑（40901×1 + 3080×2，vllmenv 环境）；
+    此前各批次（377527/377589/377606/378354）结果全部作废。
   </p>
 
   <div class="card" style="border-color:var(--warn)">
@@ -55,14 +57,18 @@ ul{margin-left:1.2em;color:var(--mut)}
       <li>验证：smoke job 379405（random_s0，24 epoch）跨过 epoch-16 墙，
         0 skip、损失 0.77→0.71、正常 DONE。</li>
       <li>处置：旧 <code>runs/E1_v1/*</code> 移至 <code>runs/_debris_20260915_1325/</code>；
-        全 12 臂以 arms.tsv 重提为 379410。</li>
+        随机/长尾/站点 9 臂 = 学校 379410（array 0-8%4，已 scancel 9/10/11）；
+        conditional_s0 = 40901 GPU1、conditional_s1/s2 = 3080 GPU0/GPU1，均 vllmenv
+        + <code>scripts/e1_v1/run_local_arm.sh</code>，输出在各自
+        <code>/data/hyc/SPARQ-Seg/runs/E1_v1/&lt;arm&gt;/</code>。</li>
     </ul>
   </div>
 
   <div class="card">
     <strong>提交命令</strong>
-    <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%4 scripts/e1_v1/submit_e1_v1.slurm</code></p>
-    <p style="color:var(--mut)">JOBID <code>379410</code> · partition <code>gpu_4090</code> · 6 CPU / 64G / 1 GPU · 96h</p>
+    <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%4 scripts/e1_v1/submit_e1_v1.slurm</code>（已用 <code>scancel 379410_9..11</code> 让出三臂）</p>
+    <p style="color:var(--mut)">JOBID <code>379410</code> · partition <code>gpu_4090</code> · 6 CPU / 64G / 1 GPU · 96h · 学校跑 arms 0–8</p>
+    <p style="color:var(--mut)">本地三臂：<code>PLSEG_CODE_ROOT=... PY=&lt;vllmenv&gt;/python bash scripts/e1_v1/run_local_arm.sh &lt;arm&gt; &lt;gpu&gt;</code></p>
   </div>
 
   <h2>Dry-run 结论</h2>
