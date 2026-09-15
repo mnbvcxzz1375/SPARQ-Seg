@@ -6,6 +6,15 @@ Contract:
 - optimization_seed fixed at 42; mask_seed is the experimental variable
 - labels come from labelsTr_All then masked; training never sees hidden organs
 - propensity OFF, Stage II OFF
+- training step mirrors official train_PLSeg.py verbatim:
+  * softmax -> clamp(min=1e-10) on every decoder branch
+  * 4 independent HADFLoss instances on nearest-downsampled onehot labels,
+    supervised_loss = mean of the 4
+  * PSD = DistillationLoss(T=10) on raw logits (deep branch detached,
+    trilinear align_corners=True), weight = consistency * sigmoid_rampup
+  * COCL = CO_Contrastive on branch-1 clamped softmax, weight alpha=0.1
+  * Adam(betas=(0.9,0.99)) lr 0.01, xavier init, patch-level min-max
+    normalization applied AFTER random crop (official ToTensor)
 """
 
 from __future__ import annotations
@@ -34,7 +43,9 @@ if PLSEG_ROOT not in sys.path:
 
 from models.Proposed.unet3d_ProgCon import UNet3D_ProgCon  # noqa: E402
 from models.Proposed.sing_class_loss import HADFLoss  # noqa: E402
+from models.weight_init import initialize_weights  # noqa: E402
 from utils.losses import *  # noqa: E402,F401,F403
+from utils.losses import CO_Contrastive, DistillationLoss  # noqa: E402
 from utils.ramps import sigmoid_rampup  # noqa: E402
 
 
@@ -76,7 +87,6 @@ class E1PartialVolumeDataset(Dataset):
         self.patch = tuple(patch_size)
         self.num_classes = num_classes
         self.n = samples_per_epoch
-        self.rng = np.random.default_rng(seed)
         self._cache: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
 
     def __len__(self):
@@ -89,12 +99,9 @@ class E1PartialVolumeDataset(Dataset):
 
         img_p = self.images_root / f"{vid}.nii.gz"
         lab_p = self.labels_full_root / f"{vid}.nii.gz"
+        # Raw HU: official ToTensor normalizes the CROP, so load unnormalized.
         img = sitk.GetArrayFromImage(sitk.ReadImage(str(img_p))).astype(np.float32)
         lab = sitk.GetArrayFromImage(sitk.ReadImage(str(lab_p))).astype(np.uint8)
-        # per-volume min-max like PL-Seg
-        mn, mx = float(img.min()), float(img.max())
-        if mx > mn:
-            img = (img - mn) / (mx - mn)
         self._cache[vid] = (img, lab, self.amask[self.volume_ids.index(vid)])
         return self._cache[vid]
 
@@ -107,18 +114,30 @@ class E1PartialVolumeDataset(Dataset):
             if not amask[c - 1]:
                 lab[full == c] = 0
         dz, dy, dx = self.patch
-        zs = max(1, img.shape[0] - dz)
-        ys = max(1, img.shape[1] - dy)
-        xs = max(1, img.shape[2] - dx)
-        z0 = int(self.rng.integers(0, zs))
-        y0 = int(self.rng.integers(0, ys))
-        x0 = int(self.rng.integers(0, xs))
-        img_c = img[z0 : z0 + dz, y0 : y0 + dy, x0 : x0 + dx]
-        lab_c = lab[z0 : z0 + dz, y0 : y0 + dy, x0 : x0 + dx]
-        # pad if needed
+        # Official TrainerCrop: random crop, retry while the image crop is
+        # constant. Use the global numpy RNG, which the DataLoader re-seeds per
+        # worker (base seed derives from --optimization-seed), so streams are
+        # deterministic yet distinct across workers.
+        zs = max(img.shape[0] - dz, 0)
+        ys = max(img.shape[1] - dy, 0)
+        xs = max(img.shape[2] - dx, 0)
+        for _attempt in range(50):
+            z0 = int(np.random.randint(0, zs + 1))
+            y0 = int(np.random.randint(0, ys + 1))
+            x0 = int(np.random.randint(0, xs + 1))
+            img_c = img[z0 : z0 + dz, y0 : y0 + dy, x0 : x0 + dx]
+            lab_c = lab[z0 : z0 + dz, y0 : y0 + dy, x0 : x0 + dx]
+            if img_c.max() != img_c.min():
+                break
+        # pad if needed (volumes smaller than the patch)
         if img_c.shape != (dz, dy, dx):
             img_c = np.pad(img_c, [(0, max(0, dz - img_c.shape[0])), (0, max(0, dy - img_c.shape[1])), (0, max(0, dx - img_c.shape[2]))], mode="constant")[:dz, :dy, :dx]
             lab_c = np.pad(lab_c, [(0, max(0, dz - lab_c.shape[0])), (0, max(0, dy - lab_c.shape[1])), (0, max(0, dx - lab_c.shape[2]))], mode="constant")[:dz, :dy, :dx]
+        # Official ToTensor: min-max normalization on the cropped patch.
+        mn, mx = float(img_c.min()), float(img_c.max())
+        if mx > mn:
+            img_c = (img_c - mn) / (mx - mn)
+        img_c = img_c.astype(np.float32)
         onehot = np.zeros((self.num_classes, dz, dy, dx), dtype=np.float32)
         for c in range(self.num_classes):
             onehot[c] = (lab_c == c).astype(np.float32)
@@ -128,36 +147,11 @@ class E1PartialVolumeDataset(Dataset):
         if not set(present).issubset(allowed):
             raise RuntimeError(f"hidden class leaked in crop of {vid}: {present} vs {sorted(allowed)}")
         return (
-            torch.from_numpy(img_c[None].copy()),
+            torch.from_numpy(np.ascontiguousarray(img_c[None])),
             torch.from_numpy(onehot),
             torch.tensor(amask, dtype=torch.uint8),
             vid,
         )
-
-
-def cocr_loss(logits, alpha=0.1):
-    sm = torch.softmax(logits, dim=1)
-    b, c = sm.shape[:2]
-    flat = sm.view(b, c, -1)
-    aff = torch.bmm(flat, flat.transpose(1, 2)) / flat.shape[2]
-    eye = torch.eye(c, device=logits.device).unsqueeze(0).expand(b, -1, -1)
-    return alpha * F.cross_entropy(aff, eye)
-
-
-def psd_loss(outputs, weight):
-    if len(outputs) < 2 or weight <= 0:
-        return logits_zero(outputs[0])
-    loss = 0.0
-    for i in range(len(outputs) - 1):
-        deep = outputs[i].detach()
-        shallow = outputs[i + 1]
-        deep_ds = F.interpolate(deep, size=shallow.shape[2:], mode="trilinear", align_corners=False)
-        loss = loss + F.mse_loss(shallow, deep_ds)
-    return weight * loss
-
-
-def logits_zero(x):
-    return x.sum() * 0.0
 
 
 def main() -> int:
@@ -173,6 +167,9 @@ def main() -> int:
     ap.add_argument("--samples-per-epoch", type=int, default=250)
     ap.add_argument("--optimization-seed", type=int, default=42)
     ap.add_argument("--expected-code-sha", default="")
+    ap.add_argument("--consistency", type=float, default=0.1)  # official PSD weight
+    ap.add_argument("--alpha", type=float, default=0.1)  # official COCL weight
+    ap.add_argument("--temperature", type=float, default=10)  # official DistillationLoss T
     args = ap.parse_args()
 
     out = Path(args.out_dir)
@@ -231,6 +228,14 @@ def main() -> int:
         "lr": args.lr,
         "propensity": False,
         "stage2": False,
+        "loss_recipe": "official train_PLSeg mirror: 4xHADFL on clamped softmax, "
+                       "logit DistillationLoss PSD, CO_Contrastive COCL",
+        "consistency": args.consistency,
+        "alpha_cocl": args.alpha,
+        "temperature": args.temperature,
+        "grad_clip": 5.0,
+        "init": "xavier",
+        "normalization": "per-patch min-max after crop (official ToTensor)",
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
     (out / "run_manifest.json").write_text(json.dumps(run_manifest, indent=2), encoding="utf-8")
@@ -260,7 +265,11 @@ def main() -> int:
         "trilinear": True,
     }
     model = UNet3D_ProgCon(params).to(device)
-    hadfl = HADFLoss(num_classes=17)
+    initialize_weights(model, "xavier")
+    # Official uses one HADFLoss per decoder branch (each has its own
+    # sliding-window hardness history).
+    hadfs = [HADFLoss(num_classes=17) for _ in range(4)]
+    distill = DistillationLoss(T=args.temperature)
     # Match official train_PLSeg.py: Adam + plateau (not raw SGD).
     opt = torch.optim.Adam(model.parameters(), betas=(0.9, 0.99), lr=args.lr)
     sched = torch.optim.lr_scheduler.ReduceLROnPlateau(
@@ -275,7 +284,7 @@ def main() -> int:
             epoch_loss = 0.0
             nb = 0
             skipped = 0
-            cw = 0.1 * sigmoid_rampup(epoch, args.epoches)
+            cw = args.consistency * sigmoid_rampup(epoch, args.epoches)
             for step, (img, onehot, amask, vids_b) in enumerate(loader):
                 img = img.to(device)
                 onehot = onehot.to(device)
@@ -285,16 +294,41 @@ def main() -> int:
                     raw_list = list(outputs)
                 else:
                     raw_list = [outputs]
-                # HADFLoss mutates net_output in-place (single_class_pre[0]=...).
-                # Clone so we do not corrupt the autograd graph / COCL input.
-                soft0 = torch.softmax(raw_list[0], dim=1).clone()
-                rest = [torch.softmax(t, dim=1) for t in raw_list]
-                sup = hadfl(soft0, onehot)
-                cocr = cocr_loss(soft0)
-                psd = psd_loss(rest, cw)
-                if isinstance(sup, (tuple, list)):
-                    sup = sup[0]
-                total = sup + cocr + psd
+                if len(raw_list) < 4:
+                    raise RuntimeError(f"expected 4 decoder branches, got {len(raw_list)}")
+                # Official step: clamped softmax per branch. The clamp is the
+                # NaN fix -- HADFL's decoupled CE takes log(p_foreground) and
+                # an unclamped softmax can hit exactly 0 under Adam lr=0.01.
+                softs = [
+                    torch.clamp(torch.softmax(t, dim=1), min=1e-10, max=1.0)
+                    for t in raw_list[:4]
+                ]
+                # Pyramid Partial Label Supervision: 4-branch HADFL on
+                # nearest-downsampled onehot labels, averaged.
+                sup_terms = []
+                for i in range(4):
+                    lab_i = (
+                        onehot
+                        if i == 0
+                        else F.interpolate(onehot, size=raw_list[i].shape[2:], mode="nearest")
+                    )
+                    sup_terms.append(hadfs[i](softs[i], lab_i))
+                sup = sum(sup_terms) / 4.0
+                # Progressive Self-Distillation on raw logits (official:
+                # trilinear align_corners=True teacher, DistillationLoss).
+                pseudo_terms = []
+                for i in range(3):
+                    teacher = F.interpolate(
+                        raw_list[i].detach(),
+                        size=raw_list[i + 1].shape[2:],
+                        mode="trilinear",
+                        align_corners=True,
+                    )
+                    pseudo_terms.append(distill(raw_list[i + 1], teacher))
+                pseudo = sum(pseudo_terms) / 3.0
+                # Classwise Orthogonal Contrastive Regularization on branch 1.
+                cocr = CO_Contrastive(softs[0])
+                total = sup + cw * pseudo + args.alpha * cocr
                 if not torch.isfinite(total):
                     skipped += 1
                     opt.zero_grad(set_to_none=True)
