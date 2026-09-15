@@ -167,6 +167,10 @@ def main() -> int:
     ap.add_argument("--samples-per-epoch", type=int, default=250)
     ap.add_argument("--optimization-seed", type=int, default=42)
     ap.add_argument("--expected-code-sha", default="")
+    ap.add_argument("--resume-checkpoint", default="",
+                    help="epoch_XXXX.pth saved by a previous interrupted run; "
+                         "resumes model+optim at epoch+1 (sampler order and "
+                         "HADFL history restart; plateau counter not saved)")
     ap.add_argument("--consistency", type=float, default=0.1)  # official PSD weight
     ap.add_argument("--alpha", type=float, default=0.1)  # official COCL weight
     ap.add_argument("--temperature", type=float, default=10)  # official DistillationLoss T
@@ -278,8 +282,34 @@ def main() -> int:
 
     log_path = out / "train.log"
     best_loss = float("inf")
+    start_epoch = 0
+    if args.resume_checkpoint:
+        ckpt_path = Path(args.resume_checkpoint)
+        ck = torch.load(ckpt_path, map_location=device)
+        model.load_state_dict(ck["model"])
+        opt.load_state_dict(ck["optim"])
+        start_epoch = int(ck["epoch"]) + 1
+        # Recover the best-so-far threshold from the existing log history so a
+        # resumed run cannot overwrite best_model.pth with a worse epoch.
+        if log_path.exists():
+            hist = []
+            for ln in log_path.read_text(encoding="utf-8").splitlines():
+                if "loss=" in ln and "skipped" not in ln:
+                    try:
+                        v = float(ln.split("loss=")[1].split()[0])
+                    except (IndexError, ValueError):
+                        continue
+                    if np.isfinite(v):
+                        hist.append(v)
+            best_loss = min(hist) if hist else float("inf")
+        run_manifest["resumed_from_epoch"] = start_epoch
+        run_manifest["resume_checkpoint"] = str(ckpt_path)
+        (out / "run_manifest.json").write_text(
+            json.dumps(run_manifest, indent=2), encoding="utf-8"
+        )
+        print(f"resumed from {ckpt_path.name} at epoch {start_epoch}", flush=True)
     with open(log_path, "a", encoding="utf-8") as logf:
-        for epoch in range(args.epoches):
+        for epoch in range(start_epoch, args.epoches):
             model.train()
             epoch_loss = 0.0
             nb = 0
