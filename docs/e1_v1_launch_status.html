@@ -58,9 +58,13 @@ ul{margin-left:1.2em;color:var(--mut)}
         0 skip、损失 0.77→0.71、正常 DONE。</li>
       <li>处置：旧 <code>runs/E1_v1/*</code> 移至 <code>runs/_debris_20260915_1325/</code>；
         随机/长尾/站点 9 臂 = 学校 379410（array 0-8%4，已 scancel 9/10/11）；
-        conditional_s0 = 40901 GPU1、conditional_s1/s2 = 3080 GPU0/GPU1，均 vllmenv
-        + <code>scripts/e1_v1/run_local_arm.sh</code>，输出在各自
-        <code>/data/hyc/SPARQ-Seg/runs/E1_v1/&lt;arm&gt;/</code>。</li>
+        conditional_s0 = 40901 GPU1、conditional_s1/s2 = 3080 GPU0/GPU1，均 vllmenv +
+        <code>scripts/e1_v1/run_local_arm.sh</code>，输出在各自
+        <code>/data/hyc/SPARQ-Seg/runs/E1_v1/&lt;arm&gt;/</code>。
+        <em>2026-09-15 20:36：40901 整机重启，cond_s0 断于 epoch 395；已用
+        <code>95a2cc2</code> 的 <code>--resume-checkpoint epoch_0349.pth</code>
+        从 epoch 350 续跑（model/optim/lr 衔接，loss 0.49–0.51 正常；采样器顺序与
+        HADFL 历史重放、plateau 计数器清零，已记入 run_manifest）。</em></li>
     </ul>
   </div>
 
