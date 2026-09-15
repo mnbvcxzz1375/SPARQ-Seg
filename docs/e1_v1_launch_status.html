@@ -27,7 +27,7 @@ ul{margin-left:1.2em;color:var(--mut)}
 <body>
 <div class="wrap">
   <span class="badge">gpu_4090 array 0-11%4</span>
-  <span class="badge">job 377527</span>
+  <span class="badge">job 379410</span>
   <span class="badge ok">dry-run 12/12</span>
   <span class="badge ok">preflight GO</span>
   <h1>E1-v1 正式 12 臂（4090D）</h1>
@@ -35,12 +35,34 @@ ul{margin-left:1.2em;color:var(--mut)}
     已从 A800 <code>hpc_gpu</code> 改投学校 <strong>gpu_4090（RTX 4090D）</strong>。
     资源按 4090 分区硬约束：6 CPU / 64G / 1 GPU；batch=1 降低 OOM 风险。
     旧 A800 job 377525 已 scancel。
+    <strong>2026-09-15 更新</strong>：因 epoch-16 NaN 事故（见下），全部 12 臂以修复码
+    <code>8a4169d</code> 重新提交为 <code>379410</code>；此前各批次（377527/377589/377606/378354）结果全部作废。
   </p>
+
+  <div class="card" style="border-color:var(--warn)">
+    <strong>NaN 事故记录（2026-09-15）</strong>
+    <ul>
+      <li>现象：job 378354 十二臂全部 COMPLETED exit 0，但从 ~epoch 16 起每步全为
+        非有限损失；旧版（<code>c83b5cc</code>）把 all-skipped epoch 记成假
+        <code>loss=0.000000</code> 空跑到 499，结果无效。</li>
+      <li>根因：E1 手写训练步偏离 vendored 官方 <code>train_PLSeg.py</code>——
+        softmax 未 <code>clamp(1e-10)</code>（HADFL 解耦 CE 对前景概率取 log，饱和即
+        −inf）；HADFL 只挂分支 1（官方 4 分支平均）；PSD 用 softmax-MSE（官方为
+        logits DistillationLoss(T=10)）；COCL 缺 L2 通道归一化；无 xavier 初始化；
+        归一化做了整卷（官方按 crop 后归一化）。</li>
+      <li>修复：<code>8a4169d</code> 逐步镜像官方实现（直接 import
+        HADFLoss / DistillationLoss / CO_Contrastive / initialize_weights）。</li>
+      <li>验证：smoke job 379405（random_s0，24 epoch）跨过 epoch-16 墙，
+        0 skip、损失 0.77→0.71、正常 DONE。</li>
+      <li>处置：旧 <code>runs/E1_v1/*</code> 移至 <code>runs/_debris_20260915_1325/</code>；
+        全 12 臂以 arms.tsv 重提为 379410。</li>
+    </ul>
+  </div>
 
   <div class="card">
     <strong>提交命令</strong>
     <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%4 scripts/e1_v1/submit_e1_v1.slurm</code></p>
-    <p style="color:var(--mut)">JOBID <code>377527</code> · partition <code>gpu_4090</code> · 6 CPU / 64G / 1 GPU · 96h</p>
+    <p style="color:var(--mut)">JOBID <code>379410</code> · partition <code>gpu_4090</code> · 6 CPU / 64G / 1 GPU · 96h</p>
   </div>
 
   <h2>Dry-run 结论</h2>
@@ -48,7 +70,7 @@ ul{margin-left:1.2em;color:var(--mut)}
     <li><span class="pass">12 tasks = 12 unique arms</span></li>
     <li>set(launcher) = set(E1-v1 manifest packs)</li>
     <li>全部 pack SHA256 与 manifest 一致</li>
-    <li>opt_seed 固定 42；code pin <code>b9b4e44</code></li>
+    <li>opt_seed 固定 42；code pin <code>8a4169d</code></li>
   </ul>
 
   <h2>12 臂</h2>
@@ -76,7 +98,7 @@ ul{margin-left:1.2em;color:var(--mut)}
   <ul>
     <li>PL-Seg UNet3D_ProgCon + HADFL + COCL + PSD ramp</li>
     <li>labelsTr_All → 按 E1 mask 置 hidden 为 0</li>
-    <li>500 epochs · batch 1 · patch 128³×96 · lr 0.01 SGD · 200 samples/epoch</li>
+    <li>500 epochs · batch 1 · patch 128³×96 · lr 0.01 Adam(0.9,0.99)+plateau · 200 samples/epoch</li>
     <li>输出 <code>run_manifest.json</code> / <code>best_model.pth</code> / <code>DONE</code></li>
   </ul>
 
