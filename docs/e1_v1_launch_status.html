@@ -71,10 +71,10 @@ ul{margin-left:1.2em;color:var(--mut)}
   <div class="card">
     <strong>评估进度（自动巡检维护，locked imagesVal 20 例，vendored 滑窗协议，final_model）</strong>
     <ul>
-      <li>2026-09-16 04:50 · 10/12 已评估。seed 配对 Δ（vs random 同种子）：
+      <li>2026-09-16 05:45 · 11/12 已评估。seed 配对 Δ（vs random 同种子）：
         longtail <strong>−1.67 / −1.26 / −0.93（均值 −1.29pp，3/3 同向）</strong>；
-        sitelike +1.46 / −1.02（均值 +0.22，种子方差大）；conditional −0.48 / −1.52。
-        剩 conditional_s2（训练尾段）、sitelike_s2（epoch ~61）。</li>
+        conditional −0.48 / −1.52 / <strong>+1.87</strong>（均值 −0.04，符号翻转、方差大）；
+        sitelike +1.46 / −1.02（2/3）。仅剩 sitelike_s2。</li>
       <li>2026-09-16 00:30 · 首批 5/12（random 全套 + longtail_s0 + conditional_s0）。</li>
       <li>评估工具 <code>tools/eval_e1_val.py</code> / 现象门分析
         <code>tools/analyze_e1.py</code>（commit 2a80ee9）；注意 sbatch
