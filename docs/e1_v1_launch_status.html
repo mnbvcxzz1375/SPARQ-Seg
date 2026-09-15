@@ -71,10 +71,12 @@ ul{margin-left:1.2em;color:var(--mut)}
   <div class="card">
     <strong>评估进度（自动巡检维护，locked imagesVal 20 例，vendored 滑窗协议，final_model）</strong>
     <ul>
-      <li>2026-09-16 00:30 · 5/12 已评估：
+      <li>2026-09-16 04:15 · 6/12 已评估：
         random 0.6784 / 0.6623 / 0.6653（s0/s1/s2）·
         longtail_s0 0.6617（seed-0 配对 Δ <strong>−1.67pp</strong>）·
-        conditional_s0 0.6736（Δ −0.48pp）。早期信号，各 pattern 仅 1/3 种子。</li>
+        conditional_s0 0.6736（Δ −0.48pp）·
+        sitelike_s0 0.6930（Δ <strong>+1.46pp</strong>，首个反向信号）。
+        pattern 差异双向存在；等全 3 种子齐后出配对门判定。</li>
       <li>评估工具 <code>tools/eval_e1_val.py</code> / 现象门分析
         <code>tools/analyze_e1.py</code>（commit 2a80ee9）；注意 sbatch
         <code>--output</code> 必须用绝对路径（相对路径曾致 379905 无日志失败）。</li>
