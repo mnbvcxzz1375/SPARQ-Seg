@@ -69,6 +69,19 @@ ul{margin-left:1.2em;color:var(--mut)}
   </div>
 
   <div class="card">
+    <strong>评估进度（自动巡检维护，locked imagesVal 20 例，vendored 滑窗协议，final_model）</strong>
+    <ul>
+      <li>2026-09-16 00:30 · 5/12 已评估：
+        random 0.6784 / 0.6623 / 0.6653（s0/s1/s2）·
+        longtail_s0 0.6617（seed-0 配对 Δ <strong>−1.67pp</strong>）·
+        conditional_s0 0.6736（Δ −0.48pp）。早期信号，各 pattern 仅 1/3 种子。</li>
+      <li>评估工具 <code>tools/eval_e1_val.py</code> / 现象门分析
+        <code>tools/analyze_e1.py</code>（commit 2a80ee9）；注意 sbatch
+        <code>--output</code> 必须用绝对路径（相对路径曾致 379905 无日志失败）。</li>
+    </ul>
+  </div>
+
+  <div class="card">
     <strong>提交命令</strong>
     <p style="margin-top:8px;color:var(--mut)"><code>sbatch --array=0-11%4 scripts/e1_v1/submit_e1_v1.slurm</code>（已用 <code>scancel 379410_9..11</code> 让出三臂）</p>
     <p style="color:var(--mut)">JOBID <code>379410</code> · partition <code>gpu_4090</code> · 6 CPU / 64G / 1 GPU · 96h · 学校跑 arms 0–8</p>
