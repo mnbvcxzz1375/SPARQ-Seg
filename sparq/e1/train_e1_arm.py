@@ -274,6 +274,7 @@ def main() -> int:
             model.train()
             epoch_loss = 0.0
             nb = 0
+            skipped = 0
             cw = 0.1 * sigmoid_rampup(epoch, args.epoches)
             for step, (img, onehot, amask, vids_b) in enumerate(loader):
                 img = img.to(device)
@@ -284,18 +285,18 @@ def main() -> int:
                     raw_list = list(outputs)
                 else:
                     raw_list = [outputs]
-                # HADFLoss expects softmax probabilities (PL-Seg train_PLSeg.py)
-                soft_list = [torch.softmax(t, dim=1) for t in raw_list]
-                logits = soft_list[0]
-                rest = soft_list
-                sup = hadfl(logits, onehot)
-                cocr = cocr_loss(logits)
-                psd = psd_loss(list(rest), cw)
+                # HADFLoss mutates net_output in-place (single_class_pre[0]=...).
+                # Clone so we do not corrupt the autograd graph / COCL input.
+                soft0 = torch.softmax(raw_list[0], dim=1).clone()
+                rest = [torch.softmax(t, dim=1) for t in raw_list]
+                sup = hadfl(soft0, onehot)
+                cocr = cocr_loss(soft0)
+                psd = psd_loss(rest, cw)
                 if isinstance(sup, (tuple, list)):
                     sup = sup[0]
                 total = sup + cocr + psd
                 if not torch.isfinite(total):
-                    # skip explosive step; do not poison weights
+                    skipped += 1
                     opt.zero_grad(set_to_none=True)
                     continue
                 total.backward()
@@ -303,15 +304,24 @@ def main() -> int:
                 opt.step()
                 epoch_loss += float(total.detach())
                 nb += 1
-            avg = epoch_loss / max(nb, 1)
+            if nb == 0:
+                (out / "FAILED").write_text(
+                    f"all steps non-finite at epoch {epoch}; skipped={skipped}\n",
+                    encoding="utf-8",
+                )
+                return 4
+            if skipped:
+                # warn but continue only if some steps were finite
+                logf.write(f"epoch={epoch} skipped_nonfinite={skipped}/{nb + skipped}\n")
+            avg = epoch_loss / nb
+            if not np.isfinite(avg):
+                (out / "FAILED").write_text(f"non-finite loss at epoch {epoch}\n", encoding="utf-8")
+                return 4
             sched.step(avg)
             line = f"epoch={epoch} loss={avg:.6f} lr={opt.param_groups[0]['lr']:.6g}\n"
             logf.write(line)
             logf.flush()
             print(line, end="", flush=True)
-            if not np.isfinite(avg):
-                (out / "FAILED").write_text(f"non-finite loss at epoch {epoch}\n", encoding="utf-8")
-                return 4
             if avg < best_loss:
                 best_loss = avg
                 torch.save(model.state_dict(), out / "best_model.pth")
