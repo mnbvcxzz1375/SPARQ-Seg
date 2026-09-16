@@ -1,60 +1,111 @@
 {
-  "metric": "mean_fg16",
+  "metric_primary": "difficult8",
   "missing_arms": [],
+  "gate": {
+    "go_pp": 2.0,
+    "nogo_pp": 1.0
+  },
   "arms": {
     "random_moderate_s0": {
-      "dice": 0.6783923251622053
+      "difficult8": 0.5416944634082439,
+      "easy8": 0.8150901869161667,
+      "mean_fg16": 0.6783923251622053
     },
     "random_moderate_s1": {
-      "dice": 0.662317491816667
+      "difficult8": 0.5337240691234426,
+      "easy8": 0.7909109145098916,
+      "mean_fg16": 0.662317491816667
     },
     "random_moderate_s2": {
-      "dice": 0.6653447571212294
+      "difficult8": 0.518555990099884,
+      "easy8": 0.8121335241425748,
+      "mean_fg16": 0.6653447571212294
     },
     "longtail_moderate_s0": {
-      "dice": 0.6617226273438384
+      "difficult8": 0.5249140698967657,
+      "easy8": 0.798531184790911,
+      "mean_fg16": 0.6617226273438384
     },
     "longtail_moderate_s1": {
-      "dice": 0.6496681760711971
+      "difficult8": 0.48952821010484376,
+      "easy8": 0.8098081420375502,
+      "mean_fg16": 0.6496681760711971
     },
     "longtail_moderate_s2": {
-      "dice": 0.6560564968668091
+      "difficult8": 0.5355501827680175,
+      "easy8": 0.7765628109656008,
+      "mean_fg16": 0.6560564968668091
     },
     "sitelike_moderate_s0": {
-      "dice": 0.6929946737129085
+      "difficult8": 0.547717512163157,
+      "easy8": 0.8382718352626597,
+      "mean_fg16": 0.6929946737129085
     },
     "sitelike_moderate_s1": {
-      "dice": 0.652055773268029
+      "difficult8": 0.53953076322602,
+      "easy8": 0.7645807833100381,
+      "mean_fg16": 0.652055773268029
     },
     "sitelike_moderate_s2": {
-      "dice": 0.583849881210602
+      "difficult8": 0.5664529336893747,
+      "easy8": 0.6012468287318292,
+      "mean_fg16": 0.583849881210602
     },
     "conditional_moderate_s0": {
-      "dice": 0.6736370830829674
+      "difficult8": 0.5250932078448001,
+      "easy8": 0.8221809583211347,
+      "mean_fg16": 0.6736370830829674
     },
     "conditional_moderate_s1": {
-      "dice": 0.6471067583816621
+      "difficult8": 0.5205311974485599,
+      "easy8": 0.7736823193147642,
+      "mean_fg16": 0.6471067583816621
     },
     "conditional_moderate_s2": {
-      "dice": 0.6840433287009551
+      "difficult8": 0.5712370505256681,
+      "easy8": 0.7968496068762423,
+      "mean_fg16": 0.6840433287009551
     }
   },
   "patterns": {
     "longtail": {
-      "paired_deltas_pp": [
-        -1.667,
-        -1.265,
-        -0.929
-      ],
-      "mean_delta_pp": -1.287,
-      "seed_std_pp": 0.302,
-      "n_pairs": 3,
+      "primary": {
+        "verdict": "UNRELIABLE: mean drop +1.47pp but signs flip across seeds (std 2.50pp)",
+        "mean_drop_pp": 1.466,
+        "seed_std_pp": 2.503,
+        "deltas_pp": [
+          -1.678,
+          -4.42,
+          1.699
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
+      "easy8": {
+        "verdict": "UNRELIABLE: mean drop +1.11pp but signs flip across seeds (std 2.26pp)",
+        "mean_drop_pp": 1.108,
+        "seed_std_pp": 2.257,
+        "deltas_pp": [
+          -1.656,
+          1.89,
+          -3.557
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
+      "mean_fg16": {
+        "verdict": "GRAY: drop +1.29pp in -2.0..-1.0pp band, consistent",
+        "mean_drop_pp": 1.287,
+        "seed_std_pp": 0.302,
+        "deltas_pp": [
+          -1.667,
+          -1.265,
+          -0.929
+        ],
+        "n_pairs": 3,
+        "sign_consistent": true
+      },
       "per_organ_delta_pp": {
-        "Liver": 1.139,
-        "Spleen": 3.77,
-        "L.Kidney": 2.374,
-        "R.Kidney": 0.451,
-        "Stomach": 4.855,
         "Gallbladder": 1.24,
         "Esophagus": -5.027,
         "Pancreas": 0.26,
@@ -62,35 +113,57 @@
         "Colon": -2.303,
         "Intestine": 0.404,
         "Adrenal": 10.588,
-        "Rectum": -12.727,
+        "Rectum": -12.727
+      },
+      "per_organ_delta_pp_easy": {
+        "Liver": 1.139,
+        "Spleen": 3.77,
+        "L.Kidney": 2.374,
+        "R.Kidney": 0.451,
+        "Stomach": 4.855,
         "Bladder": -14.727,
         "L.Hip": 0.787,
         "R.Hip": -7.512
-      },
-      "hard5_delta_pp": {
-        "Adrenal": 10.588,
-        "Duodenum": -4.163,
-        "Gallbladder": 1.24,
-        "Esophagus": -5.027,
-        "Rectum": -12.727
-      },
-      "verdict": "GRAY ZONE: 1.29pp drop in 1.0-2.0pp band, direction consistent; extend seeds before deciding"
+      }
     },
     "sitelike": {
-      "paired_deltas_pp": [
-        1.46,
-        -1.026,
-        -8.149
-      ],
-      "mean_delta_pp": -2.572,
-      "seed_std_pp": 4.073,
-      "n_pairs": 3,
+      "primary": {
+        "verdict": "NO PHENOMENON: structured BETTER by 1.99pp, sign-consistent (std 1.98pp)",
+        "mean_drop_pp": -1.991,
+        "seed_std_pp": 1.979,
+        "deltas_pp": [
+          0.602,
+          0.581,
+          4.79
+        ],
+        "n_pairs": 3,
+        "sign_consistent": true
+      },
+      "easy8": {
+        "verdict": "UNRELIABLE: mean drop +7.13pp but signs flip across seeds (std 10.07pp)",
+        "mean_drop_pp": 7.135,
+        "seed_std_pp": 10.072,
+        "deltas_pp": [
+          2.318,
+          -2.633,
+          -21.089
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
+      "mean_fg16": {
+        "verdict": "UNRELIABLE: mean drop +2.57pp but signs flip across seeds (std 4.07pp)",
+        "mean_drop_pp": 2.572,
+        "seed_std_pp": 4.073,
+        "deltas_pp": [
+          1.46,
+          -1.026,
+          -8.149
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
       "per_organ_delta_pp": {
-        "Liver": -3.754,
-        "Spleen": -8.88,
-        "L.Kidney": 0.369,
-        "R.Kidney": -1.897,
-        "Stomach": 6.813,
         "Gallbladder": 0.995,
         "Esophagus": -2.46,
         "Pancreas": 3.629,
@@ -98,35 +171,57 @@
         "Colon": 2.499,
         "Intestine": 4.335,
         "Adrenal": 6.752,
-        "Rectum": -0.963,
+        "Rectum": -0.963
+      },
+      "per_organ_delta_pp_easy": {
+        "Liver": -3.754,
+        "Spleen": -8.88,
+        "L.Kidney": 0.369,
+        "R.Kidney": -1.897,
+        "Stomach": 6.813,
         "Bladder": -29.432,
         "L.Hip": -1.185,
         "R.Hip": -19.11
-      },
-      "hard5_delta_pp": {
-        "Adrenal": 6.752,
-        "Duodenum": 1.14,
-        "Gallbladder": 0.995,
-        "Esophagus": -2.46,
-        "Rectum": -0.963
-      },
-      "verdict": "PHENOMENON (2.57pp drop >= 2.0pp gate) BUT seed std exceeds gate - unreliable, extend seeds"
+      }
     },
     "conditional": {
-      "paired_deltas_pp": [
-        -0.476,
-        -1.521,
-        1.87
-      ],
-      "mean_delta_pp": -0.042,
-      "seed_std_pp": 1.418,
-      "n_pairs": 3,
+      "primary": {
+        "verdict": "NO-GO: |drop| 0.76pp < 1.0pp",
+        "mean_drop_pp": -0.763,
+        "seed_std_pp": 3.189,
+        "deltas_pp": [
+          -1.66,
+          -1.319,
+          5.268
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
+      "easy8": {
+        "verdict": "NO-GO: |drop| 0.85pp < 1.0pp",
+        "mean_drop_pp": 0.847,
+        "seed_std_pp": 1.103,
+        "deltas_pp": [
+          0.709,
+          -1.723,
+          -1.528
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
+      "mean_fg16": {
+        "verdict": "NO-GO: |drop| 0.04pp < 1.0pp",
+        "mean_drop_pp": 0.042,
+        "seed_std_pp": 1.418,
+        "deltas_pp": [
+          -0.476,
+          -1.521,
+          1.87
+        ],
+        "n_pairs": 3,
+        "sign_consistent": false
+      },
       "per_organ_delta_pp": {
-        "Liver": 0.866,
-        "Spleen": -1.227,
-        "L.Kidney": -0.545,
-        "R.Kidney": -1.009,
-        "Stomach": 4.542,
         "Gallbladder": 2.794,
         "Esophagus": 0.278,
         "Pancreas": 2.325,
@@ -134,19 +229,19 @@
         "Colon": 0.169,
         "Intestine": 1.67,
         "Adrenal": 5.106,
-        "Rectum": -1.4,
+        "Rectum": -1.4
+      },
+      "per_organ_delta_pp_easy": {
+        "Liver": 0.866,
+        "Spleen": -1.227,
+        "L.Kidney": -0.545,
+        "R.Kidney": -1.009,
+        "Stomach": 4.542,
         "Bladder": -10.558,
         "L.Hip": 0.452,
         "R.Hip": 0.7
-      },
-      "hard5_delta_pp": {
-        "Adrenal": 5.106,
-        "Duodenum": -4.839,
-        "Gallbladder": 2.794,
-        "Esophagus": 0.278,
-        "Rectum": -1.4
-      },
-      "verdict": "NO-GO: |delta| < 1pp, no usable phenomenon"
+      }
     }
-  }
+  },
+  "hard5_exploratory_posthoc": true
 }
