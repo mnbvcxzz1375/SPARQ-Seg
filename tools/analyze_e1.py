@@ -58,7 +58,7 @@ def paired_deltas(data, arms_by_seed, getter):
     return deltas
 
 
-def verdict_for(deltas, go_pp, nogo_pp):
+def verdict_for(deltas, go_pp, nogo_pp, require_full_seeds=3):
     if not deltas:
         return "NO DATA", None
     mean = sum(deltas) / len(deltas)
@@ -66,18 +66,26 @@ def verdict_for(deltas, go_pp, nogo_pp):
     drop = -mean * 100  # positive = structured worse
     signs = [1 if d < 0 else 0 for d in deltas]
     consistent = all(s == signs[0] for s in signs)
-    if drop >= go_pp and consistent:
-        v = f"GO: -{drop:.2f}pp drop >= {go_pp}pp, sign-consistent"
-    elif abs(drop) < nogo_pp:
+    full = len(deltas) >= require_full_seeds
+    if drop >= go_pp and consistent and full and std * 100 <= go_pp:
+        v = (f"GO: -{drop:.2f}pp drop >= {go_pp}pp, sign-consistent, "
+             f"all seeds present, seed std {std*100:.2f}pp <= gate")
+    elif drop >= go_pp and full and not (std * 100 <= go_pp):
+        v = (f"UNRELIABLE: mean drop -{drop:.2f}pp >= gate but seed std "
+             f"{std*100:.2f}pp exceeds it (single-seed-driven risk; audit F6)")
+    elif abs(drop) < nogo_pp and full:
         v = f"NO-GO: |drop| {abs(drop):.2f}pp < {nogo_pp}pp"
-    elif drop <= -1.0 and consistent:
+    elif drop <= -1.0 and consistent and full:
         v = (f"NO PHENOMENON: structured BETTER by {-drop:.2f}pp, "
              f"sign-consistent (std {std*100:.2f}pp)")
     elif not consistent:
         v = (f"UNRELIABLE: mean drop {drop:+.2f}pp but signs flip across seeds "
              f"(std {std*100:.2f}pp)")
+    elif not full:
+        v = (f"PARTIAL: {len(deltas)}/{require_full_seeds} pairs, mean drop "
+             f"{drop:+.2f}pp - gate not evaluated on incomplete data")
     else:
-        v = f"GRAY: drop {drop:+.2f}pp in {-go_pp:.1f}..-{nogo_pp:.1f}pp band, consistent"
+        v = f"GRAY: drop {drop:+.2f}pp in {-go_pp:.1f}..{-nogo_pp:.1f}pp band, consistent"
     return v, {"mean_drop_pp": round(drop, 3), "seed_std_pp": round(std * 100, 3),
                "deltas_pp": [round(d * 100, 3) for d in deltas], "n_pairs": len(deltas),
                "sign_consistent": consistent}
@@ -110,10 +118,12 @@ def main() -> int:
     g_fg = lambda d: float(d["mean_fg16"])
 
     lines = [
-        "# E1 phenomenon-gate paired analysis (v2, pre-specified groups)",
+        "# E1 phenomenon-gate paired analysis (v3)",
         "",
-        f"metric primary: DSC_difficult8 (WORD official difficult group, "
-        f"pre-specified 2026-09-16); cases={data[next(iter(data))]['n_cases']} "
+        f"primary per DESIGN_LOCKS: mean_fg16; DSC_difficult8 = external-definition "
+        f"grouping (WORD official difficult group) added as sensitivity analysis "
+        f"2026-09-16 (post fg16 results; see E1_V1_VERDICT.md audit constraints). "
+        f"cases={data[next(iter(data))]['n_cases']} "
         f"locked imagesVal; missing arms: {missing or 'none'}",
         "",
         "| arm | difficult8 | easy8 | fg16 |",
@@ -128,7 +138,8 @@ def main() -> int:
                              f"{float(d['mean_fg16']):.4f} |")
     lines.append("")
 
-    report = {"metric_primary": "difficult8", "missing_arms": missing,
+    report = {"metric_primary": "mean_fg16", "metric_sensitivity": "difficult8",
+              "missing_arms": missing,
               "gate": {"go_pp": args.go_pp, "nogo_pp": args.nogo_pp},
               "arms": {a: {"difficult8": g_diff(d), "easy8": g_easy(d),
                            "mean_fg16": float(d["mean_fg16"])}
@@ -144,11 +155,14 @@ def main() -> int:
             v, st = verdict_for(paired_deltas(data, by_seed, getter),
                                 args.go_pp, args.nogo_pp)
             if key == "difficult8":
-                entry["primary"] = {"verdict": v, **(st or {})}
-                lines.append(f"- **DSC_difficult8: {v}** {st or {}}")
+                entry["sensitivity_difficult8"] = {"verdict": v, **(st or {})}
+                lines.append(f"- DSC_difficult8 (sensitivity): {v} {st or {}}")
             else:
                 entry[key] = {"verdict": v, **(st or {})}
-                lines.append(f"- {key}: {v} {st or {}}")
+                if key == "mean_fg16":
+                    lines.append(f"- **mean_fg16 (primary): {v}** {st or {}}")
+                else:
+                    lines.append(f"- {key}: {v} {st or {}}")
 
         # per-organ deltas (difficult group first, pre-specified)
         pd = [data[by_seed[s]]["per_class_mean_dice"] for s in SEEDS

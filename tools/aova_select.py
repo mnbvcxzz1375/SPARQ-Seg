@@ -48,8 +48,11 @@ def main() -> int:
     ap.add_argument("--budget", type=int, required=True, help="new (v,c) pairs")
     ap.add_argument("--rng-seed", type=int, default=0)
     ap.add_argument("--entropy-file", default="",
-                    help="npz key 'entropy' [N,C]; required for entropy strategies")
+                    help="npz keys 'entropy' [N,C-1] + 'volume_ids'; required for "
+                         "entropy strategies")
     ap.add_argument("--out-root", required=True)
+    ap.add_argument("--force", action="store_true",
+                    help="allow overwriting an existing asset (discouraged)")
     args = ap.parse_args()
 
     base_dir = Path(args.base_pack_root)
@@ -63,14 +66,42 @@ def main() -> int:
     with np.load(base_npz) as z:
         base_mask = z["mask"].astype(np.uint8)
     n, c = base_mask.shape
+    vids_path = base_dir / "volume_order.txt"
+    if not vids_path.exists():
+        raise RuntimeError("base pack missing volume_order.txt")
+    vids = [ln.strip() for ln in
+            vids_path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    if len(vids) != n:
+        raise RuntimeError(f"volume_order rows {len(vids)} != mask rows {n}")
 
     entropy = None
+    entropy_sha = ""
     if args.strategy in ("entropy", "entropy_coverage"):
         if not args.entropy_file:
             raise RuntimeError(f"--entropy-file required for {args.strategy}")
+        entropy_sha = sha256_file(Path(args.entropy_file))
         with np.load(args.entropy_file) as zf:
             entropy = zf["entropy"].astype(np.float64)
-        if entropy.shape != (n, c):
+            if "volume_ids" not in zf.files:
+                raise RuntimeError("entropy file missing volume_ids; refuse to "
+                                   "assume row order (audit F8)")
+            ent_ids = [str(x) for x in zf["volume_ids"]]
+        # identity + order gate: same set required; permutation reindexed;
+        # anything else rejected.
+        if len(set(ent_ids)) != len(ent_ids):
+            raise RuntimeError("duplicate volume_ids in entropy file")
+        if set(ent_ids) != set(vids):
+            raise RuntimeError(
+                f"entropy volume id set mismatch: only_base="
+                f"{sorted(set(vids) - set(ent_ids))[:3]} "
+                f"only_ent={sorted(set(ent_ids) - set(vids))[:3]}")
+        if ent_ids != vids:
+            perm = np.array([ent_ids.index(v) for v in vids])
+            entropy = entropy[perm]
+            print("entropy rows reindexed to base volume_order", flush=True)
+        if entropy.shape[0] != len(ent_ids):
+            raise RuntimeError("entropy row count != volume_ids count")
+        if entropy.shape[1] != c:
             raise RuntimeError(f"entropy shape {entropy.shape} != mask {(n, c)}")
         entropy = np.where(base_mask == 1, -np.inf, entropy)  # mask annotated cells
 
@@ -109,6 +140,8 @@ def main() -> int:
         "acquired": int(add.sum()),
         "base_arm": args.base_arm,
         "base_pack_sha256": got,
+        "entropy_file_sha256": entropy_sha or None,
+        "volume_order_sha256": sha256_file(vids_path),
         "per_volume_counts_minmax": [int(mask.sum(axis=1).min()),
                                      int(mask.sum(axis=1).max())],
         "inclusion_prob_semantics": "realized per-class coverage (uniform "
@@ -119,6 +152,10 @@ def main() -> int:
     out = Path(args.out_root)
     out.mkdir(parents=True, exist_ok=True)
     name = f"{args.strategy}_b{args.budget}_r{args.rng_seed}.npz"
+    if (out / name).exists() and not args.force:
+        raise RuntimeError(
+            f"asset exists: {out / name}; AOVA assets are immutable - "
+            f"bump budget/seed or pass --force explicitly (audit F9)")
     np.savez_compressed(
         out / name,
         mask=mask,

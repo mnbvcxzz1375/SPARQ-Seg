@@ -102,7 +102,8 @@ class TestAovaSelect(unittest.TestCase):
         h = hashlib.sha256((root / "random_moderate_s0.npz").read_bytes()).hexdigest()
         (root / "manifest.json").write_text(json.dumps(
             {"packs": {"random_moderate_s0.npz": {"sha256": h}}}))
-        (root / "volume_order.txt").write_text("v0\nv1\nv2\n")
+        (root / "volume_order.txt").write_text(
+            "\n".join(f"v{i}" for i in range(12)) + "\n")
         return root
 
     def test_random_augment_contract(self):
@@ -153,6 +154,74 @@ class TestAovaSelect(unittest.TestCase):
                 self.assertEqual(entry["sha256"],
                                  hashlib.sha256((out / name).read_bytes()).hexdigest())
 
+    def test_entropy_ids_permutation_reindexed(self):
+        mod = _load_aova_select()
+        with tempfile.TemporaryDirectory() as td:
+            base = self._make_base(Path(td) / "base")
+            with np.load(base / "random_moderate_s0.npz") as zf:
+                bmask = zf["mask"].copy()
+            ids = [f"v{i}" for i in range(12)]
+            ent = np.zeros((12, 4), dtype=np.float32)
+            # put the single high score on the LAST base row's free cell
+            free_last = [cc for cc in range(4) if bmask[11, cc] == 0]
+            ent[11, free_last[0]] = 5.0
+            # store entropy rows in REVERSED order with matching reversed ids
+            perm = np.arange(12)[::-1]
+            ef = Path(td) / "ent.npz"
+            np.savez_compressed(ef, entropy=ent[perm].copy(),
+                                volume_ids=np.array([ids[p] for p in perm]))
+            out = Path(td) / "aug"
+            old = sys.argv
+            sys.argv = ["aova_select", "--base-pack-root", str(base),
+                        "--base-arm", "random_moderate_s0", "--strategy", "entropy",
+                        "--budget", "1", "--entropy-file", str(ef), "--out-root", str(out)]
+            try:
+                mod.main()
+            finally:
+                sys.argv = old
+            man = json.loads((out / "manifest.json").read_text())
+            with np.load(out / next(iter(man["packs"]))) as z:
+                added = z["mask"] - bmask
+            v_idx, c_idx = np.argwhere(added)[0]
+            self.assertEqual((int(v_idx), int(c_idx)), (11, free_last[0]),
+                             "permuted entropy rows must be reindexed to base order")
+
+    def test_entropy_ids_missing_rejected(self):
+        mod = _load_aova_select()
+        with tempfile.TemporaryDirectory() as td:
+            base = self._make_base(Path(td) / "base")
+            ef = Path(td) / "ent.npz"
+            np.savez_compressed(ef, entropy=np.zeros((12, 4), dtype=np.float32))  # no ids
+            old = sys.argv
+            sys.argv = ["aova_select", "--base-pack-root", str(base),
+                        "--base-arm", "random_moderate_s0", "--strategy", "entropy",
+                        "--budget", "1", "--entropy-file", str(ef),
+                        "--out-root", str(Path(td) / "aug")]
+            try:
+                with self.assertRaises(RuntimeError):
+                    mod.main()
+            finally:
+                sys.argv = old
+
+    def test_asset_immutable(self):
+        mod = _load_aova_select()
+        with tempfile.TemporaryDirectory() as td:
+            base = self._make_base(Path(td) / "base")
+            out = Path(td) / "aug"
+            for _ in range(2):
+                old = sys.argv
+                sys.argv = ["aova_select", "--base-pack-root", str(base),
+                            "--base-arm", "random_moderate_s0", "--strategy", "random",
+                            "--budget", "3", "--rng-seed", "0", "--out-root", str(out)]
+                try:
+                    if (out / "random_b3_r0.npz").exists():
+                        with self.assertRaises(RuntimeError):
+                            mod.main()
+                    else:
+                        mod.main()
+                finally:
+                    sys.argv = old
+
     def test_entropy_picks_max_cells(self):
         mod = _load_aova_select()
         with tempfile.TemporaryDirectory() as td:
@@ -164,7 +233,8 @@ class TestAovaSelect(unittest.TestCase):
             target = free[0]
             ent[target] = 10.0
             ef = Path(td) / "ent.npz"
-            np.savez_compressed(ef, entropy=ent)
+            np.savez_compressed(ef, entropy=ent,
+                                volume_ids=np.array([f"v{i}" for i in range(12)]))
             out = Path(td) / "aug"
             old = sys.argv
             sys.argv = ["aova_select", "--base-pack-root", str(base),
