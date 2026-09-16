@@ -134,12 +134,18 @@ def main() -> int:
                      f"(seed std {entry['seed_std_pp']:.2f} pp, n={entry['n_pairs']})")
         if "hard5_delta_pp" in entry:
             lines.append(f"- hard-5 organ deltas: {entry['hard5_delta_pp']}")
-        if entry["mean_delta_pp"] >= args.go_pp:
-            verdict = "GO-leaning (>=2pp): propensity path promising"
-        elif entry["mean_delta_pp"] < args.nogo_pp:
-            verdict = "NO-GO (<1pp): stop propensity per DESIGN_LOCKS"
+        if entry["mean_delta_pp"] <= -args.go_pp:
+            verdict = (f"PHENOMENON ({-entry['mean_delta_pp']:.2f}pp drop >= "
+                       f"{args.go_pp}pp gate)")
+            if entry["seed_std_pp"] > args.go_pp:
+                verdict += " BUT seed std exceeds gate - unreliable, extend seeds"
+        elif -entry["mean_delta_pp"] < args.nogo_pp:
+            verdict = "NO-GO: |delta| < 1pp, no usable phenomenon"
         else:
-            verdict = "gray zone (1-2pp): extend seeds before deciding"
+            verdict = (f"GRAY ZONE: {-entry['mean_delta_pp']:.2f}pp drop in "
+                       f"{args.nogo_pp}-{args.go_pp}pp band, direction "
+                       f"{'consistent' if entry['seed_std_pp'] < 0.5 else 'mixed'}; "
+                       f"extend seeds before deciding")
         lines.append(f"- verdict: {verdict}")
         lines.append("")
         entry["verdict"] = verdict
