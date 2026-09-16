@@ -1,0 +1,94 @@
+{
+  "design": "acquisition",
+  "base": {
+    "pack_root": "annotation_masks/WORD/E1_v1",
+    "arm": "random_moderate_s0",
+    "sha256": "5be5f332d35b201e543e6f4c0355dab882f8447d6d63f0b6fd97d4daecda8e65"
+  },
+  "packs": {
+    "entropy_coverage_b200_r0.npz": {
+      "sha256": "e4e9e3b7da55bfb168ba64be5b198f5ffc196af5e739c302b21bd473b7a95b4d",
+      "mask_seed": 0,
+      "pattern": "entropy_coverage",
+      "severity": "moderate",
+      "budget": "variable",
+      "meta": {
+        "design": "acquisition",
+        "strategy": "entropy_coverage",
+        "rng_seed": 0,
+        "requested_budget": 200,
+        "acquired": 200,
+        "base_arm": "random_moderate_s0",
+        "base_pack_sha256": "5be5f332d35b201e543e6f4c0355dab882f8447d6d63f0b6fd97d4daecda8e65",
+        "per_volume_counts_minmax": [
+          2,
+          9
+        ],
+        "inclusion_prob_semantics": "realized per-class coverage (uniform approximation; not used for IPW here)"
+      }
+    },
+    "random_b200_r0.npz": {
+      "sha256": "21d0b4cf21ef9843ba99989cc320c799bced808c17b0cacb369e16052c9cc27d",
+      "mask_seed": 0,
+      "pattern": "random",
+      "severity": "moderate",
+      "budget": "variable",
+      "meta": {
+        "design": "acquisition",
+        "strategy": "random",
+        "rng_seed": 0,
+        "requested_budget": 200,
+        "acquired": 200,
+        "base_arm": "random_moderate_s0",
+        "base_pack_sha256": "5be5f332d35b201e543e6f4c0355dab882f8447d6d63f0b6fd97d4daecda8e65",
+        "per_volume_counts_minmax": [
+          2,
+          8
+        ],
+        "inclusion_prob_semantics": "realized per-class coverage (uniform approximation; not used for IPW here)"
+      }
+    },
+    "class_balanced_b200_r0.npz": {
+      "sha256": "a5141720fbc433c9d73177b666d5f67c1778d4195cfecd2c115ead4a63fe484a",
+      "mask_seed": 0,
+      "pattern": "class_balanced",
+      "severity": "moderate",
+      "budget": "variable",
+      "meta": {
+        "design": "acquisition",
+        "strategy": "class_balanced",
+        "rng_seed": 0,
+        "requested_budget": 200,
+        "acquired": 200,
+        "base_arm": "random_moderate_s0",
+        "base_pack_sha256": "5be5f332d35b201e543e6f4c0355dab882f8447d6d63f0b6fd97d4daecda8e65",
+        "per_volume_counts_minmax": [
+          2,
+          7
+        ],
+        "inclusion_prob_semantics": "realized per-class coverage (uniform approximation; not used for IPW here)"
+      }
+    },
+    "entropy_b200_r0.npz": {
+      "sha256": "fe47ac1456c8566b8daad4fdb629af3bff07f3b74ac8457358f3be6dba3b7e50",
+      "mask_seed": 0,
+      "pattern": "entropy",
+      "severity": "moderate",
+      "budget": "variable",
+      "meta": {
+        "design": "acquisition",
+        "strategy": "entropy",
+        "rng_seed": 0,
+        "requested_budget": 200,
+        "acquired": 200,
+        "base_arm": "random_moderate_s0",
+        "base_pack_sha256": "5be5f332d35b201e543e6f4c0355dab882f8447d6d63f0b6fd97d4daecda8e65",
+        "per_volume_counts_minmax": [
+          2,
+          9
+        ],
+        "inclusion_prob_semantics": "realized per-class coverage (uniform approximation; not used for IPW here)"
+      }
+    }
+  }
+}

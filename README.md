@@ -57,10 +57,29 @@ tests/
 - [x] Phase-0 data layer + review
 - [x] Phase-0 commits (`f99bfc7` tag `phase0-v1.1`; pack source `ea4921f`)
 - [x] WORD E1-v1 mask pack frozen + contract verify PASS
-- [ ] 40902 GPU1 dataloader→HADFL leak smoke
-- [ ] E1 phenomenon trainings (school A800)
-- [ ] Stage I PA-HADFL
-- [ ] Stage II AOVA
+- [x] E1 preflight GO + 12-arm trainings complete (school 4090D + 40901/3080,
+      code `8a4169d` official-mirror) + locked-imagesVal evals + gate analysis
+- [~] **E1 verdict: INTERIM — AUDIT HOLD (2026-09-16)** — see
+      `docs/E1_V1_VERDICT.md`; calibration steps (real-chain tests, MCAR
+      bridge) gate any route conclusion
+- [~] Stage I PA-HADFL: paused (audit hold)
+- [~] Stage II AOVA Phase A: four 4/16 pilot arms running
+      (`runs/AOVA_v1/`, packs `annotation_masks/WORD/AOVA_v1/`); budget
+      expansion frozen pending the bridge experiment
+
+## Results & analysis sync policy (per cycle)
+
+Every experiment/analysis cycle must push to this repo, not only code:
+
+1. per-arm results: `val_dice.json` + flattened `train.log` /
+   `run_manifest.json` (evidence dirs under `artifacts/`, e.g.
+   `artifacts/audit_evidence_20260916/`);
+2. analysis write-ups: `artifacts/E1_ANALYSIS.{md,json}`, verdict/status docs
+   (`docs/E1_V1_VERDICT.md`, `docs/e1_v1_launch_status.html`, AOVA protocol
+   checklist);
+3. decision revisions (audit responses, gate wording changes) as dated notes.
+
+Numbers that exist on a compute host but are not in the repo count as not done.
 
 ## Data boundary
 
