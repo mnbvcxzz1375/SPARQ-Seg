@@ -68,7 +68,7 @@ def build(device):
 
 
 def onehot_from(lab, device):
-    oh = torch.zeros(1, 17, *lab.shape[1:], device=device)
+    oh = torch.zeros(1, 17, *lab.shape, device=device)
     for c in range(17):
         oh[0, c] = (lab == c).float()
     return oh
@@ -97,6 +97,8 @@ def main() -> int:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type != "cuda":
         raise SystemExit("requires CUDA (vendor HADFLoss criteria)")
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
     report = {"runtime_imports": {}}
     for mod in (UNet3D_ProgCon, HADFLoss, DistillationLoss, CO_Contrastive):
@@ -110,13 +112,13 @@ def main() -> int:
     img = torch.rand(1, 1, D, H, W, generator=g).to(device)
 
     gg = torch.Generator().manual_seed(SEED)
-    lab_full = torch.randint(0, 2, (D, H, W), generator=gg, device=device)
+    lab_full = torch.randint(0, 2, (D, H, W), generator=gg).to(device)
     lab_full = torch.where(lab_full == 1, torch.full_like(lab_full, 2), lab_full)
-    m7 = gg.random((D, H, W)).to(device) > 0.94
-    m13 = gg.random((D, H, W)).to(device) > 0.96
-    lab_full = torch.where(m7, torch.full_like(lab_full, 7), lab_full)
-    lab_full = torch.where(m13 & ~m7, torch.full_like(lab_full, HIDDEN_PERT_FROM),
-                           lab_full)
+    m7 = torch.rand((D, H, W), generator=gg) > 0.94
+    m13 = torch.rand((D, H, W), generator=gg) > 0.96
+    lab_full = torch.where(m7.to(device), torch.full_like(lab_full, 7), lab_full)
+    lab_full = torch.where(m13.to(device) & ~m7.to(device),
+                           torch.full_like(lab_full, HIDDEN_PERT_FROM), lab_full)
 
     vis_t = torch.tensor(list(VISIBLE), device=device)
 
@@ -144,24 +146,36 @@ def main() -> int:
     mA, hA, dA = build(device)
     c1_l, g1, h1 = run_case(mA, hA, dA, img, view_a, device)
     mB, hB, dB = build(device)
-    c2_l, g2, h2 = run_case(mB, hB, dB, img, view_b, device)
+    c1b_l, g1b, h1b = run_case(mB, hB, dB, img, view_a, device)  # noise baseline
     mC, hC, dC = build(device)
-    c3_l, _, _ = run_case(mC, hC, dC, img, view_c, device)
+    c2_l, g2, h2 = run_case(mC, hC, dC, img, view_b, device)
+    mD, hD, dD = build(device)
+    c3_l, _, _ = run_case(mD, hD, dD, img, view_c, device)
 
+    def maxdiff(x, y):
+        return float((x - y).abs().max())
+
+    grad_noise = maxdiff(g1, g1b)            # same input twice: GPU atomics noise
+    grad_cross = maxdiff(g1, g2)             # hidden-GT perturbed
     hidden_invariant_losses = c1_l == c2_l
-    hidden_invariant_grads = bool(torch.equal(g1, g2))
+    hidden_invariant_grads = grad_cross <= max(grad_noise * 2.0, 1e-6)
     hidden_invariant_hist = len(h1) == len(h2) and all(
         torch.equal(a, b) for a, b in zip(h1, h2))
     visible_changes = any(abs(c1_l[k] - c3_l[k]) > 1e-9 for k in ("sup", "total"))
 
     report.update({
         "loss_viewA": c1_l, "loss_hidden_pert": c2_l, "loss_visible_pert": c3_l,
+        "grad_noise_baseline_max": grad_noise,
+        "grad_cross_max": grad_cross,
         "hidden_counterfactual": {
             "loss_exact": hidden_invariant_losses,
-            "grads_exact": hidden_invariant_grads,
+            "grads_within_noise": hidden_invariant_grads,
             "hadfl_history_exact": hidden_invariant_hist,
         },
         "visible_positive_control_changes_loss": visible_changes,
+        "note": "backward atomics are non-deterministic on GPU; gradient "
+                "equality judged against a same-input self-difference "
+                "baseline (×2), losses/history judged exactly",
     })
     ok = bool(hidden_invariant_losses and hidden_invariant_grads
               and hidden_invariant_hist and visible_changes)

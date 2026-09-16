@@ -1,0 +1,56 @@
+{
+  "runtime_imports": {
+    "UNet3D_ProgCon": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/models/Proposed/unet3d_ProgCon.py",
+      "sha256": "5fc10c5cd57f7b22615b7aeb45a6ab06d8b0a36935bf7d2485b546927ef58c37"
+    },
+    "HADFLoss": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/models/Proposed/sing_class_loss.py",
+      "sha256": "d374ec9ff93e8e35fcac04a0bbf4c25e2f4048f4d2e87cb3629365a0175121ca"
+    },
+    "DistillationLoss": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/utils/losses.py",
+      "sha256": "080e445b3752fcb074550916f7b8fe028377d8255dddf76c9925e47736310f54"
+    },
+    "CO_Contrastive": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/utils/losses.py",
+      "sha256": "080e445b3752fcb074550916f7b8fe028377d8255dddf76c9925e47736310f54"
+    }
+  },
+  "input_DHW": [
+    64,
+    80,
+    96
+  ],
+  "hidden_perturbed_voxels": 18334,
+  "data_view_identical_under_hidden_pert": true,
+  "visible_control_changed_voxels": 14733,
+  "loss_viewA": {
+    "sup": 2.929049491882324,
+    "pseudo": 2.8371188640594482,
+    "cocl": 2.57789945602417,
+    "total": 4.179831027984619
+  },
+  "loss_hidden_pert": {
+    "sup": 2.929049491882324,
+    "pseudo": 2.8371188640594482,
+    "cocl": 2.57789945602417,
+    "total": 4.179831027984619
+  },
+  "loss_visible_pert": {
+    "sup": 2.8258678913116455,
+    "pseudo": 2.8371188640594482,
+    "cocl": 2.57789945602417,
+    "total": 4.0766496658325195
+  },
+  "grad_noise_baseline_max": 5.8144330978393555e-05,
+  "grad_cross_max": 6.182491779327393e-05,
+  "hidden_counterfactual": {
+    "loss_exact": true,
+    "grads_within_noise": true,
+    "hadfl_history_exact": true
+  },
+  "visible_positive_control_changes_loss": true,
+  "note": "backward atomics are non-deterministic on GPU; gradient equality judged against a same-input self-difference baseline (\u00d72), losses/history judged exactly",
+  "pass": true
+}

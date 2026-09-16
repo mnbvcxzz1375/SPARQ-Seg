@@ -58,7 +58,7 @@ def load_eval(ckpt_path, device):
     return model
 
 
-def eval_case(model, sitk, img_p, lab_p, stride, patch):
+def eval_case(model, sitk, img_p, lab_p, stride, patch, device):
     img = sitk.GetArrayFromImage(sitk.ReadImage(str(img_p))).astype(np.float32)
     mn, mx = float(img.min()), float(img.max())
     if mx > mn:
@@ -141,7 +141,7 @@ def main() -> int:
             per_case = []
             for name in cases:
                 dice = eval_case(model, sitk, ir / name, lr / name,
-                                 args.stride, list(args.patch))
+                                 args.stride, list(args.patch), device)
                 per_case.append({"case": name, "all17": float(dice.mean()),
                                  "fg16": float(dice[1:].mean()),
                                  "per_class": dice.tolist()})

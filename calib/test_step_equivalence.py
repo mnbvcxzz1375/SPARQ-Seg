@@ -98,6 +98,8 @@ def main() -> int:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type != "cuda":
         raise SystemExit("HADFLoss criteria require CUDA; run on a GPU host")
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
     img, onehot = make_batch(device)
     cw, alpha = 0.35, 0.1
@@ -110,61 +112,80 @@ def main() -> int:
         report["runtime_imports"][mod.__name__] = {"file": f,
                                                    "sha256": sha256_file(f)}
 
-    # ---- branch A: legacy ----
-    mA, hA, dA, oA = build_branch(device)
-    torch.manual_seed(SEED + 7)
-    mA.train()
-    oA.zero_grad(set_to_none=True)
-    tA, partsA, _ = legacy_step_forward(mA, img, onehot, hA, dA, cw, alpha)
-    tA.backward()
-    gA = flat_grads(mA)          # pre-clip gradients
-    pA0 = flat_params(mA)
-    torch.nn.utils.clip_grad_norm_(mA.parameters(), 5.0)
-    oA.step()
-    pA1 = flat_params(mA)
-    histA = [ [h.clone() for h in hadf.batch_loss_history] for hadf in hA ]
+    def run_branch(kind):
+        """Fresh identical branch; execute one step. kind: 'legacy'|'shared'."""
+        m, h, d, o = build_branch(device)
+        torch.manual_seed(SEED + 7)
+        m.train()
+        o.zero_grad(set_to_none=True)
+        if kind == "legacy":
+            t, parts, _ = legacy_step_forward(m, img, onehot, h, d, cw, alpha)
+        else:
+            t, parts, _ = forward_losses(m, img, onehot, h, d, CO_Contrastive,
+                                         cw, alpha)
+        t.backward()
+        g = flat_grads(m)                 # pre-clip gradients
+        p0 = flat_params(m)
+        torch.nn.utils.clip_grad_norm_(m.parameters(), 5.0)
+        o.step()
+        p1 = flat_params(m)
+        hist = [[hh.clone() for hh in hadf.batch_loss_history] for hadf in h]
+        return parts, g, p0, p1 - p0, hist
 
-    # ---- branch B: shared ----
-    mB, hB, dB, oB = build_branch(device)
-    torch.manual_seed(SEED + 7)
-    mB.train()
-    oB.zero_grad(set_to_none=True)
-    tB, partsB, _ = forward_losses(mB, img, onehot, hB, dB, CO_Contrastive,
-                                  cw, alpha)
-    tB.backward()
-    gB = flat_grads(mB)
-    pB0 = flat_params(mB)
-    torch.nn.utils.clip_grad_norm_(mB.parameters(), 5.0)
-    oB.step()
-    pB1 = flat_params(mB)
-    histB = [ [h.clone() for h in hadf.batch_loss_history] for hadf in hB ]
+    a1 = run_branch("legacy")
+    a2 = run_branch("legacy")   # self-difference baseline: pure GPU noise
+    b = run_branch("shared")
 
-    def cmp(a, b):
-        a, b = a.float(), b.float()
-        return {"max_abs_diff": float((a - b).abs().max()),
-                "exact_equal": bool(torch.equal(a, b))}
+    def cmp(x, y):
+        x, y = x.float(), y.float()
+        return {"max_abs_diff": float((x - y).abs().max()),
+                "exact_equal": bool(torch.equal(x, y))}
 
-    report["initial_params"] = cmp(pA0, pB0)
-    report["losses"] = {k: cmp(partsA[k].detach().cpu(), partsB[k].detach().cpu())
-                        for k in partsA}
-    report["gradients"] = cmp(gA.cpu(), gB.cpu())
-    report["param_update"] = cmp((pA1 - pA0).cpu(), (pB1 - pB0).cpu())
+    report["losses_selfdiff"] = {k: cmp(a1[0][k].detach().cpu(),
+                                        a2[0][k].detach().cpu())
+                                 for k in a1[0]}
+    report["gradients_selfdiff"] = cmp(a1[1].cpu(), a2[1].cpu())
+    report["param_update_selfdiff"] = cmp(a1[3].cpu(), a2[3].cpu())
+    report["initial_params_exact"] = bool(torch.equal(a1[2].cpu(), b[2].cpu()))
+    report["losses"] = {k: cmp(a1[0][k].detach().cpu(), b[0][k].detach().cpu())
+                        for k in a1[0]}
+    report["gradients"] = cmp(a1[1].cpu(), b[1].cpu())
+    report["param_update"] = cmp(a1[3].cpu(), b[3].cpu())
     report["hadfl_history_equal"] = bool(
-        len(histA) == len(histB)
-        and all(len(a) == len(b) and torch.equal(x, y)
-                for ha, hb in zip(histA, histB) for x, y in zip(ha, hb)))
-    ok = (report["initial_params"]["exact_equal"]
-          and report["gradients"]["exact_equal"]
-          and report["param_update"]["exact_equal"]
-          and report["hadfl_history_equal"]
-          and all(v["exact_equal"] for v in report["losses"].values()))
-    report["equivalence_exact"] = bool(ok)
+        all(len(ha) == len(hb)
+            and all(torch.equal(x, y) for x, y in zip(ha, hb))
+            for ha, hb in zip(a1[4], b[4])))
+
+    # gate: losses must be exact; grads/update cross-diffs must sit at GPU
+    # noise level (bounded by the legacy self-difference baseline), since
+    # bit-exactness across distinct cuDNN executions is not achievable.
+    def within_noise(cross, selfd, scale=2.0):
+        return (cross["exact_equal"]
+                or cross["max_abs_diff"] <= max(selfd["max_abs_diff"] * scale,
+                                                1e-6))
+
+    l_ok = all(v["exact_equal"] for v in report["losses"].values())
+    g_ok = within_noise(report["gradients"], report["gradients_selfdiff"])
+    p_ok = within_noise(report["param_update"], report["param_update_selfdiff"],
+                        scale=4.0)
+    report["gate"] = {"losses_exact": bool(l_ok),
+                      "grads_within_noise": bool(g_ok),
+                      "param_update_within_noise": bool(p_ok),
+                      "note": "bit-exactness across separate cuDNN executions "
+                              "is not achievable; noise bounded by legacy "
+                              "self-difference (audit F2 step-1 method)"}
+    ok = bool(l_ok and g_ok and p_ok and report["hadfl_history_equal"])
+    report["equivalence"] = ok
+    report["equivalence_exact"] = bool(
+        ok and report["gradients"]["exact_equal"]
+        and report["param_update"]["exact_equal"])
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps({k: report[k] for k in
-                      ("equivalence_exact", "hadfl_history_equal", "losses",
-                       "gradients", "param_update")}, indent=2))
+                      ("equivalence", "gate", "hadfl_history_equal", "losses",
+                       "gradients", "param_update", "gradients_selfdiff",
+                       "param_update_selfdiff")}, indent=2))
     return 0 if ok else 1
 
 
