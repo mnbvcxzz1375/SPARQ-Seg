@@ -44,11 +44,20 @@
 
 ## 实现清单
 
-- [x] `sparq/active/strategies.py` + 测试
-- [x] `tools/aova_select.py`（增强 pack 生成器，合同与 E1_v1 一致）
-- [ ] `tools/aova_score_entropy.py`（teacher 熵打分，GPU 机上跑）
-- [ ] 4/16 四臂训练+评估（学校 4090D；`run_local_arm.sh` 同管线）
+- [x] `sparq/active/strategies.py` + 测试（9/9 本地）
+- [x] `tools/aova_select.py`（增强 pack 生成器，manifest 合并式更新）
+- [x] `tools/aova_score_entropy.py`（teacher 熵打分；2026-09-16 已跑，
+      teacher=random_s0 final_model，100 卷 ~35 分钟，4090D）
+- [x] 4/16 四臂训练已提交（2026-09-16，学校 4090D；B=200 全局新增 mask，
+      per-volume 2→8/9 不均匀分布，策略特征显著）：
+      `random_b200_r0` / `class_balanced_b200_r0` / `entropy_b200_r0` /
+      `entropy_coverage_b200_r0`，out=`runs/AOVA_v1/<arm>`，
+      packs=`annotation_masks/WORD/AOVA_v1/`
+- [ ] 四臂评估（train DONE 后 `eval_e1_val.py` 同管线）+ 先决条件判定
 - [ ] Phase B 门判定与预算阶梯扩展
+
+已知教训：aova_select 早期版本覆盖写 manifest 导致两臂 KeyError（380511/
+380539），已改合并式更新 + 回归测试，重提后四臂齐跑。
 
 ## 边界（继承设计锁）
 

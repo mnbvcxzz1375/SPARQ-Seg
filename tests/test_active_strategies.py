@@ -133,6 +133,26 @@ class TestAovaSelect(unittest.TestCase):
             self.assertEqual(man["packs"][name]["meta"]["design"], "acquisition")
             self.assertTrue((out / "volume_order.txt").exists())
 
+    def test_manifest_merges_multiple_strategies(self):
+        mod = _load_aova_select()
+        with tempfile.TemporaryDirectory() as td:
+            base = self._make_base(Path(td) / "base")
+            out = Path(td) / "aug"
+            for strat in ("random", "class_balanced"):
+                old = sys.argv
+                sys.argv = ["aova_select", "--base-pack-root", str(base),
+                            "--base-arm", "random_moderate_s0", "--strategy", strat,
+                            "--budget", "3", "--rng-seed", "0", "--out-root", str(out)]
+                try:
+                    mod.main()
+                finally:
+                    sys.argv = old
+            man = json.loads((out / "manifest.json").read_text())
+            self.assertEqual(len(man["packs"]), 2, "second run clobbered manifest")
+            for name, entry in man["packs"].items():
+                self.assertEqual(entry["sha256"],
+                                 hashlib.sha256((out / name).read_bytes()).hexdigest())
+
     def test_entropy_picks_max_cells(self):
         mod = _load_aova_select()
         with tempfile.TemporaryDirectory() as td:

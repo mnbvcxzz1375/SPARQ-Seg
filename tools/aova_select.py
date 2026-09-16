@@ -126,21 +126,29 @@ def main() -> int:
         inclusion_prob=inc,
         pattern_meta=np.array(json.dumps(meta)),
     )
-    manifest = {
-        "design": "acquisition",
-        "base": {"pack_root": str(base_dir), "arm": args.base_arm, "sha256": got},
-        "packs": {
-            name: {
-                "sha256": sha256_file(out / name),
-                "mask_seed": args.rng_seed,
-                "pattern": args.strategy,
-                "severity": "moderate",
-                "budget": new_budget if new_budget >= 0 else "variable",
-                "meta": meta,
-            }
-        },
+    man_path = out / "manifest.json"
+    entry = {
+        name: {
+            "sha256": sha256_file(out / name),
+            "mask_seed": args.rng_seed,
+            "pattern": args.strategy,
+            "severity": "moderate",
+            "budget": new_budget if new_budget >= 0 else "variable",
+            "meta": meta,
+        }
     }
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    if man_path.exists():
+        # merge so multiple strategies can share one pack root
+        manifest = json.loads(man_path.read_text(encoding="utf-8"))
+        manifest.setdefault("packs", {}).update(entry)
+        manifest["design"] = "acquisition"
+    else:
+        manifest = {
+            "design": "acquisition",
+            "base": {"pack_root": str(base_dir), "arm": args.base_arm, "sha256": got},
+            "packs": entry,
+        }
+    man_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     (out / "volume_order.txt").write_bytes((base_dir / "volume_order.txt").read_bytes())
     print(f"WROTE {out / name} acquired={meta['acquired']} "
           f"counts={meta['per_volume_counts_minmax']}")
