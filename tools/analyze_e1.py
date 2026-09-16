@@ -4,18 +4,17 @@
 Reads runs/E1_v1/<arm>/val_dice.json for the 12 arms, pairs every
 structured-pattern arm with the same-mask-seed random arm.
 
-Primary metric (pre-specified per PL-Seg/WORD official difficulty groups,
-decided 2026-09-16 to avoid post-hoc organ selection):
-    DSC_difficult8  = mean Dice over Gallbladder, Esophagus, Pancreas,
-                      Duodenum, Colon, Intestine, Adrenal, Rectum
-Secondary: DSC_easy8, mean_fg16 (global mean), per-organ deltas.
-The random_s0-worst-5 "hard-5" view is kept ONLY as an explicitly labeled
-exploratory, post-hoc breakdown.
+Primary metric per DESIGN_LOCKS: mean_fg16 (global mean over 16 foreground
+organs). DSC_difficult8 / easy8 (WORD official difficulty groups, source
+external) are a sensitivity breakdown added 2026-09-16 AFTER fg16 results
+existed — reported per revision note, not "pre-registered". The
+random_s0-worst-5 "hard-5" view is exploratory, post-hoc only.
 
-Gate (DESIGN_LOCKS, applied to DSC_difficult8 paired mean):
-  GO    >= 2pp drop, consistent sign across seeds
-  NO-GO < 1pp drop
-  GRAY  in between / inconsistent
+Gate wording caveat (audit F6): the 3-seed engineering gate (mean >= 2pp,
+all seeds present, seed std <= 2pp) reduces but does not eliminate
+single-seed leverage (e.g. [-0.70,-0.70,-4.60] passes with mean exactly
+2.0pp). Reports therefore also print the median drop and leave-one-seed-out
+means; do not read the gate as a statistical reliability proof.
 
 Writes runs/E1_v1/E1_ANALYSIS.json and E1_ANALYSIS.md.
 """
@@ -25,6 +24,8 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+
+import numpy as np
 
 PATTERNS = ["random", "longtail", "sitelike", "conditional"]
 SEEDS = [0, 1, 2]
@@ -73,14 +74,14 @@ def verdict_for(deltas, go_pp, nogo_pp, require_full_seeds=3):
     elif drop >= go_pp and full and not (std * 100 <= go_pp):
         v = (f"UNRELIABLE: mean drop -{drop:.2f}pp >= gate but seed std "
              f"{std*100:.2f}pp exceeds it (single-seed-driven risk; audit F6)")
+    elif not consistent:
+        v = (f"UNRELIABLE: mean drop {drop:+.2f}pp but signs flip across seeds "
+             f"(std {std*100:.2f}pp)")
     elif abs(drop) < nogo_pp and full:
         v = f"NO-GO: |drop| {abs(drop):.2f}pp < {nogo_pp}pp"
     elif drop <= -1.0 and consistent and full:
         v = (f"NO PHENOMENON: structured BETTER by {-drop:.2f}pp, "
              f"sign-consistent (std {std*100:.2f}pp)")
-    elif not consistent:
-        v = (f"UNRELIABLE: mean drop {drop:+.2f}pp but signs flip across seeds "
-             f"(std {std*100:.2f}pp)")
     elif not full:
         v = (f"PARTIAL: {len(deltas)}/{require_full_seeds} pairs, mean drop "
              f"{drop:+.2f}pp - gate not evaluated on incomplete data")
@@ -88,7 +89,11 @@ def verdict_for(deltas, go_pp, nogo_pp, require_full_seeds=3):
         v = f"GRAY: drop {drop:+.2f}pp in {-go_pp:.1f}..{-nogo_pp:.1f}pp band, consistent"
     return v, {"mean_drop_pp": round(drop, 3), "seed_std_pp": round(std * 100, 3),
                "deltas_pp": [round(d * 100, 3) for d in deltas], "n_pairs": len(deltas),
-               "sign_consistent": consistent}
+               "sign_consistent": consistent,
+               "median_drop_pp": round(-np.median(deltas) * 100, 3),
+               "leave_one_out_mean_drop_pp": [
+                   round(-(sum(deltas) - d) / (len(deltas) - 1) * 100, 3)
+                   for d in deltas] if len(deltas) > 1 else []}
 
 
 def main() -> int:

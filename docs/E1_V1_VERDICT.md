@@ -36,13 +36,16 @@
 | sitelike Δ | **+0.60 / +0.58 / +4.79（一致更好）** | 混合，s2 **−21.1** | +1.46 / −1.03 / **−8.15** |
 | conditional Δ | −1.66 / −1.32 / +5.27 | 混合 | −0.48 / −1.52 / +1.87 |
 
-判定（difficult8 主口径）：
+判定（历史：2026-09-16 上午曾短暂以 difficult8 为主口径；经审计纠正后主口径
+恢复为 mean_fg16，difficult8 记为外部分组敏感性分析——两套结论并列如下，
+数字不变）：
 
-- **longtail：UNRELIABLE**（均值 drop +1.47pp，但符号跨种子翻转，std 2.5pp）。
+- **longtail：UNRELIABLE**（difficult8 均值 drop +1.47pp，符号跨种子翻转，std
+  2.5pp）；fg16（primary）：GRAY −1.29pp，3/3 同向。
 - **sitelike：NO PHENOMENON**（difficult8 上 structured 一致更好 +1.99pp；
   global −2.57pp 完全由 s2 的 **easy8 −21.1pp** 驱动——大器官标注被拿走，
-  困难组反而受益）。
-- **conditional：NO-GO**（|drop| 0.76pp < 1pp）。
+  困难组反而受益）。fg16：UNRELIABLE（std 4.07pp 超门限，单种子驱动）。
+- **conditional：NO-GO**（|drop| 0.76pp < 1pp；fg16 符号翻转 UNRELIABLE）。
 - global mean_fg16：唯一稳定的信号是 longtail（3/3 同向、−1.29pp、std 0.30），
   落在 1–2pp 灰区的下沿，够不到 2–3pp GO 门。
 
