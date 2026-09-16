@@ -178,9 +178,19 @@ def main() -> int:
     ap.add_argument("--patch", type=int, nargs=3, default=[128, 128, 96])
     ap.add_argument("--val-interval", type=int, default=2)
     ap.add_argument("--opt-seed", type=int, default=42)
+    ap.add_argument("--allow-nonempty", action="store_true",
+                    help="explicit override to continue into a non-empty "
+                         "out-dir; bridge policy is NO-RESUME, so prefer a "
+                         "fresh directory")
     args = ap.parse_args()
 
     out = Path(args.out_dir)
+    if out.exists() and any(out.iterdir()):
+        if not args.allow_nonempty:
+            print(f"REFUSING non-empty out-dir {out} (bridge policy: no "
+                  f"resume, no mixing; use a fresh directory or pass "
+                  f"--allow-nonempty explicitly)")
+            return 2
     out.mkdir(parents=True, exist_ok=True)
     if (out / "DONE").exists():
         print("already completed")
@@ -202,10 +212,25 @@ def main() -> int:
     with np.load(npz) as z:
         amask = z["mask"]
     vids = [ln.strip() for ln in
-            (pack_dir / "volume_order.txt").read_text().splitlines() if ln.strip()]
+            (pack_dir / "volume_order.txt").read_text().splitlines()
+            if ln.strip()]
+    # ---- startup assertions (submission gates, not experiments) ----
+    assert amask.shape == (100, 16), f"mask shape {amask.shape}"
+    assert set(np.unique(amask).tolist()) <= {0, 1}, "mask not binary"
+    assert (amask.sum(axis=1) == 2).all(), "mask rows must sum to 2 (2/16)"
+    assert len(set(vids)) == 100, "train volume ids not unique/100"
+    val_ids = {p.name for p in Path(args.val_images_root).glob("*.nii.gz")}
+    assert len(val_ids) == 20, f"expected 20 val cases, got {len(val_ids)}"
+    assert not (set(vids) & {v.replace('.nii.gz', '') for v in val_ids}), \
+        "train/val overlap"
+    order_hash = sha256_file(pack_dir / "volume_order.txt")
+    pm_order = man.get("volume_order_sha256")
+    assert pm_order is None or pm_order == order_hash, \
+        "volume_order.txt does not match pack manifest"
 
     run_manifest = {
-        "purpose": "MCAR bridge, REFERENCE recipe (see module docstring)",
+        "purpose": "MCAR bridge, REFERENCE recipe (see module docstring); "
+                   "NO-RESUME policy: interruption -> fresh directory",
         "pack": {"path": str(npz), "sha256": sha256_file(npz),
                  "mask_seed": man["packs"][args.pack_name].get("mask_seed")},
         "recipe": {"crop_DHW_from_patch": [args.patch[2], args.patch[1],
@@ -215,10 +240,17 @@ def main() -> int:
                    "optimizer": "Adam(0.9,0.99)", "lr": args.lr,
                    "grad_clip": None, "plateau": "mode=max on val mean_all17",
                    "val_interval": args.val_interval,
-                   "val_stride": [args.patch[0], args.patch[2]],
+                   "val_stride_train_select": [args.patch[0], args.patch[2]],
+                   "final_eval_stride": [64, 64],
                    "consistency": args.consistency, "alpha": args.alpha,
                    "temperature": args.temperature, "opt_seed": args.opt_seed},
         "val_roots": [str(args.val_images_root), str(args.val_labels_root)],
+        "software": {"python": sys.version, "torch": torch.__version__,
+                     "cuda": torch.version.cuda,
+                     "gpu": torch.cuda.get_device_name(0)},
+        "source_hashes": {
+            "calib/train_bridge.py": sha256_file(Path(__file__)),
+            "calib/train_step.py": sha256_file(REPO / "calib" / "train_step.py")},
         "runtime_imports": {},
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
@@ -257,15 +289,24 @@ def main() -> int:
             model.train()
             tot_sum, nb, skipped = 0.0, 0, 0
             cw = args.consistency * sigmoid_rampup(epoch, args.epoches)
-            for img, onehot in loader:
+            for bi, (img, onehot) in enumerate(loader):
                 img, onehot = img.to(device), onehot.to(device)
                 opt.zero_grad(set_to_none=True)
                 total, _, _ = forward_losses(model, img, onehot, hadfs, distill,
                                              CO_Contrastive, cw, args.alpha)
                 if not torch.isfinite(total):
-                    skipped += 1
-                    continue
+                    # calibration arm: non-finite loss is a stop condition,
+                    # not something to skip (audit round-2 requirement)
+                    (out / "DIAGNOSTIC_nonfinite_loss").write_text(
+                        f"epoch={epoch} batch={bi} loss={float(total)}\n")
+                    return 4
                 total.backward()
+                bad = [n for n, p in model.named_parameters()
+                       if p.grad is not None and not torch.isfinite(p.grad).all()]
+                if bad:
+                    (out / "DIAGNOSTIC_nonfinite_grad").write_text(
+                        f"epoch={epoch} batch={bi} params={bad[:8]}\n")
+                    return 4
                 opt.step()          # NO grad clip (reference recipe)
                 tot_sum += float(total.detach())
                 nb += 1
@@ -292,8 +333,27 @@ def main() -> int:
             print(line, flush=True)
 
     torch.save(model.state_dict(), out / "final_model.pth")
+    # final report: both checkpoints under the LOCKED 64/64 evaluator so the
+    # bridge is comparable to W3/E1 numbers without mixing stride conventions
+    final_eval = {}
+    for cname in ("best_model.pth", "final_model.pth"):
+        p = out / cname
+        if not p.exists():
+            continue
+        ck = torch.load(p, map_location=device)
+        model.load_state_dict(ck)
+        per = evaluate(model, val_pairs, device, 64, 64, args.patch)
+        final_eval[cname] = {
+            "mean_all17": float(np.mean([c["all17"] for c in per])),
+            "mean_fg16": float(np.mean([c["fg16"] for c in per])),
+            "per_case": per,
+            "sha256": sha256_file(p),
+        }
+    (out / "final_eval_stride64.json").write_text(
+        json.dumps(final_eval, indent=2), encoding="utf-8")
     (out / "DONE").write_text(json.dumps(
-        {"best_val_all17": best,
+        {"best_val_all17(train-select-stride)": best,
+         "final_eval_stride64": {k: v["mean_fg16"] for k, v in final_eval.items()},
          "finished_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}))
     return 0
 

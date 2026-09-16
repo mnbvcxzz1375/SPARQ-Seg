@@ -1,0 +1,43 @@
+{
+  "case": "word_0002",
+  "hidden_voxels": 10599,
+  "visible_voxels": 130030,
+  "runtime_imports": {
+    "UNet3D_ProgCon": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/models/Proposed/unet3d_ProgCon.py",
+      "sha256": "5fc10c5cd57f7b22615b7aeb45a6ab06d8b0a36935bf7d2485b546927ef58c37"
+    },
+    "HADFLoss": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/models/Proposed/sing_class_loss.py",
+      "sha256": "d374ec9ff93e8e35fcac04a0bbf4c25e2f4048f4d2e87cb3629365a0175121ca"
+    },
+    "DistillationLoss": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/utils/losses.py",
+      "sha256": "080e445b3752fcb074550916f7b8fe028377d8255dddf76c9925e47736310f54"
+    },
+    "CO_Contrastive": {
+      "file": "/public/home/heyecheng/word_paper_registry_20260904/code/utils/losses.py",
+      "sha256": "080e445b3752fcb074550916f7b8fe028377d8255dddf76c9925e47736310f54"
+    },
+    "BridgeCropDataset": {
+      "file": "/public/home/heyecheng/SPARQ-Seg/calib/train_bridge.py",
+      "sha256": "e0e4f73728d8a8a63e083250746a6bd12cdf9cfe0a6e47a631eb6527ecf60133"
+    }
+  },
+  "view_identical_under_hidden_pert": true,
+  "dataset_reproducible": true,
+  "grad_noise_baseline_max": 5.007022991776466e-06,
+  "grad_cross_max": 7.650814950466156e-06,
+  "losses_viewA": {
+    "sup": 0.6066112518310547,
+    "pseudo": 2.8368444442749023,
+    "cocl": 2.6118693351745605,
+    "total": 1.8606938123703003
+  },
+  "hidden_counterfactual": {
+    "loss_exact": true,
+    "grads_within_noise": true,
+    "hadfl_history_exact": true
+  },
+  "pass": true
+}

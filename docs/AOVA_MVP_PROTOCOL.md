@@ -34,13 +34,31 @@
 
 ## 判定规则
 
-- **先决条件**：`entropy_x_coverage` 相对 `random` 在 difficult8 上有提升且
-  fg16 不掉——否则所有基于 teacher entropy 的打分路线（含 Fisher）都不成立，
-  回头重想 acquisition score。
+- **先决条件（资源投入规则，非逻辑定理）**：`entropy_x_coverage` 相对 `random`
+  在 difficult8 上有提升且 fg16 不掉——**当前 pilot 不支持继续投入更复杂的
+  teacher-entropy 方法（含 Fisher）**；先完成校准与诊断。一条简单打分函数
+  失败并不在逻辑上否定其他打分函数，只是不支持现在花钱。
 - `class_balanced` vs `random`：分离"纯覆盖率均衡"与"实例不确定性"两个来源。
-- 过线 → Phase B：多轮序贯（acquisition model 逐轮更新）、B_90%FSL、
-  product kernel Fisher；不过线 → AOVA 论文故事改为 risk/robustness
-  （E1 的 sitelike_s2 型单实现灾难），不做通用 acquisition。
+- 通过 → Phase B：多轮序贯（acquisition model 逐轮更新）、B_90%FSL、
+  product kernel Fisher；不过线 → 暂缓 AOVA 投入，是否转向 risk/robustness
+  论文故事等校准完成后再议。
+
+## Pilot 首轮结果（2026-09-16，单 seed r0，旧配方 F2/F3 限制下）
+
+预算口径：从冻结 `random_moderate_s0`（2/16）出发，**全局新增 200 份
+(v,c) 标注**（总计 400 份、平均每卷 4 份，非每卷恰 4/16），对照同起点
+0.6784（random_s0 @2/16 fg16）：
+
+| 臂 | fg16 | vs 起点 |
+|---|---|---|
+| random_b200_r0 | 0.7495 | **+7.1pp** |
+| entropy_b200_r0 | 0.7367 | +5.8pp |
+| class_balanced_b200_r0 | 0.7278 | +4.9pp |
+| entropy_coverage_b200_r0 | 0.7129 | +3.5pp |
+
+有限结论：**在当前单次初始化、单预算、旧训练配方下，三个候选选择策略
+没有优于 random**。支持冻结扩预算与暂缓复杂模块；不支持"主动标注无价值"
+的强结论。单 seed 方差未知（E1 同配方下 random 臂间约 ±1pp）。
 
 ## 实现清单
 

@@ -25,32 +25,7 @@
       "sha256": "080e445b3752fcb074550916f7b8fe028377d8255dddf76c9925e47736310f54"
     }
   },
-  "losses_selfdiff": {
-    "sup": {
-      "max_abs_diff": 0.0,
-      "exact_equal": true
-    },
-    "pseudo": {
-      "max_abs_diff": 0.0,
-      "exact_equal": true
-    },
-    "cocl": {
-      "max_abs_diff": 0.0,
-      "exact_equal": true
-    },
-    "total": {
-      "max_abs_diff": 0.0,
-      "exact_equal": true
-    }
-  },
-  "gradients_selfdiff": {
-    "max_abs_diff": 9.484821930527687e-05,
-    "exact_equal": false
-  },
-  "param_update_selfdiff": {
-    "max_abs_diff": 0.019938552752137184,
-    "exact_equal": false
-  },
+  "deterministic_warnings": [],
   "initial_params_exact": true,
   "losses": {
     "sup": {
@@ -70,21 +45,100 @@
       "exact_equal": true
     }
   },
+  "losses_selfdiff": {
+    "sup": {
+      "max_abs_diff": 0.0,
+      "exact_equal": true
+    },
+    "pseudo": {
+      "max_abs_diff": 0.0,
+      "exact_equal": true
+    },
+    "cocl": {
+      "max_abs_diff": 0.0,
+      "exact_equal": true
+    },
+    "total": {
+      "max_abs_diff": 0.0,
+      "exact_equal": true
+    }
+  },
+  "sup_scales": {
+    "legacy": [
+      4.3367085456848145,
+      4.412375450134277,
+      4.472601890563965,
+      4.491829872131348
+    ],
+    "shared": [
+      4.3367085456848145,
+      4.412375450134277,
+      4.472601890563965,
+      4.491829872131348
+    ],
+    "selfdiff_legacy2": [
+      4.3367085456848145,
+      4.412375450134277,
+      4.472601890563965,
+      4.491829872131348
+    ]
+  },
   "gradients": {
-    "max_abs_diff": 0.00013176864013075829,
+    "max_abs_diff": 0.00011992454528808594,
+    "exact_equal": false
+  },
+  "gradients_selfdiff": {
+    "max_abs_diff": 0.0001494884490966797,
     "exact_equal": false
   },
   "param_update": {
-    "max_abs_diff": 0.01996885985136032,
+    "max_abs_diff": 0.019942771643400192,
+    "exact_equal": false
+  },
+  "param_update_selfdiff": {
+    "max_abs_diff": 0.01993165723979473,
     "exact_equal": false
   },
   "hadfl_history_equal": true,
+  "top_update_diff_params": [
+    {
+      "param": "down1.maxpool_conv.1.conv_conv.4.weight",
+      "grad_max_abs_preclip": 3.3937394618988037e-06,
+      "grad_cross_diff": -1.8684659153223038e-07,
+      "update_abs_diff": 0.019942771643400192
+    },
+    {
+      "param": "in_conv.conv_conv.4.weight",
+      "grad_max_abs_preclip": 1.3879034668207169e-06,
+      "grad_cross_diff": -1.025036908686161e-05,
+      "update_abs_diff": 0.019919879734516144
+    },
+    {
+      "param": "down1.maxpool_conv.1.conv_conv.4.weight",
+      "grad_max_abs_preclip": 5.099078407511115e-06,
+      "grad_cross_diff": 3.6430283216759562e-06,
+      "update_abs_diff": 0.019912218675017357
+    },
+    {
+      "param": "down2.maxpool_conv.1.conv_conv.0.weight",
+      "grad_max_abs_preclip": 1.7802813090384007e-06,
+      "grad_cross_diff": -6.03729858994484e-07,
+      "update_abs_diff": 0.01990237459540367
+    },
+    {
+      "param": "down2.maxpool_conv.1.conv_conv.0.weight",
+      "grad_max_abs_preclip": 1.1044612620025873e-06,
+      "grad_cross_diff": -1.656691893003881e-06,
+      "update_abs_diff": 0.01987418532371521
+    }
+  ],
   "gate": {
+    "initial_params_exact": true,
     "losses_exact": true,
-    "grads_within_noise": true,
-    "param_update_within_noise": true,
-    "note": "bit-exactness across separate cuDNN executions is not achievable; noise bounded by legacy self-difference (audit F2 step-1 method)"
+    "hadfl_history_equal": true,
+    "grads_numeric_consistency": true,
+    "param_update_numeric_consistency": true,
+    "note": "tolerance-based numeric consistency vs one self-difference reference; single-seed-diff is neither a strict lower bound nor a proven upper bound of execution noise"
   },
-  "equivalence": true,
-  "equivalence_exact": false
+  "equivalence": true
 }

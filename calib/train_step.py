@@ -14,7 +14,9 @@ import torch.nn.functional as F
 def forward_losses(model, img, onehot, hadfs, distill, cocl_fn, cw, alpha):
     """Compute the official PL-Seg training loss for one batch.
 
-    Returns (total, parts, raw_list). parts values are tensors.
+    Returns (total, parts, raw_list). parts values are tensors, except
+    parts["debug"]["sup_scales"] = per-branch HADFL losses as floats
+    (diagnostic only; not part of any computation).
     """
     outputs = model(img)
     raw_list = list(outputs) if isinstance(outputs, (tuple, list)) else [outputs]
@@ -45,7 +47,9 @@ def forward_losses(model, img, onehot, hadfs, distill, cocl_fn, cw, alpha):
     pseudo = sum(pseudo_terms) / 3.0
     cocr = cocl_fn(softs[0])
     total = sup + cw * pseudo + alpha * cocr
-    return total, {"sup": sup, "pseudo": pseudo, "cocl": cocr, "total": total}, raw_list
+    parts = {"sup": sup, "pseudo": pseudo, "cocl": cocr, "total": total}
+    parts["debug"] = {"sup_scales": [float(x.detach()) for x in sup_terms]}
+    return total, parts, raw_list
 
 
 def train_step(model, img, onehot, opt, hadfs, distill, cocl_fn, cw, alpha,
@@ -56,9 +60,10 @@ def train_step(model, img, onehot, opt, hadfs, distill, cocl_fn, cw, alpha,
                                      cw, alpha)
     if not torch.isfinite(total):
         opt.zero_grad(set_to_none=True)
-        return {k: float("nan") for k in parts}, False
+        return {k: float("nan") for k in ("sup", "pseudo", "cocl", "total")}, False
     total.backward()
     if grad_clip:
         torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
     opt.step()
-    return {k: float(v.detach()) for k, v in parts.items()}, True
+    return {k: float(parts[k].detach())
+            for k in ("sup", "pseudo", "cocl", "total")}, True

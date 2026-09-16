@@ -49,4 +49,6 @@ def legacy_step_forward(model, img, onehot, hadfs, distill, cw, args_alpha):
     pseudo = sum(pseudo_terms) / 3.0
     cocr = CO_Contrastive(softs[0])
     total = sup + cw * pseudo + args_alpha * cocr
-    return total, {"sup": sup, "pseudo": pseudo, "cocl": cocr, "total": total}, raw_list
+    parts = {"sup": sup, "pseudo": pseudo, "cocl": cocr, "total": total}
+    parts["debug"] = {"sup_scales": [float(x.detach()) for x in sup_terms]}
+    return total, parts, raw_list
