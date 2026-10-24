@@ -1,0 +1,1 @@
+{"best_val_all17(train-select-stride)": 0.2754933620246908, "final_eval_stride64": {"best_model.pth": 0.2536953208257816, "final_model.pth": 0.18635200540536356}, "finished_utc": "2026-10-24T11:20:38Z"}

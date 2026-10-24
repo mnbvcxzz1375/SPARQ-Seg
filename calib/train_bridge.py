@@ -287,6 +287,30 @@ def main() -> int:
 
     best = float("-inf")
     val_history = []
+    bn_reset_events = []          # audit trail of BN stat sanitizations
+    zero_fg_streak = 0            # collapse circuit breaker
+
+    def sanitize_bn(model, epoch):
+        """Reset any BatchNorm layer whose running stats went non-finite.
+
+        Root cause of the 'silent collapse' (R1 random_s0): one extreme batch
+        can overflow a layer's running_var to Inf; eval-mode then outputs
+        all-background forever while train-mode (batch stats) stays healthy.
+        Weights are unaffected, so resetting the polluted buffers to their
+        initial (0,1) restores eval; stats re-accumulate within a few epochs.
+        """
+        bad = []
+        for name, m in model.named_modules():
+            if isinstance(m, torch.nn.BatchNorm3d):
+                if not (torch.isfinite(m.running_mean).all()
+                        and torch.isfinite(m.running_var).all()):
+                    m.reset_running_stats()
+                    bad.append(name)
+        if bad:
+            bn_reset_events.append({"epoch": epoch, "layers": bad})
+            print(f"BN_STATS_RESET epoch={epoch} layers={bad}", flush=True)
+        return bad
+
     log = out / "train.log"
     with open(log, "a", encoding="utf-8") as lf:
         for epoch in range(args.epoches):
@@ -319,6 +343,7 @@ def main() -> int:
                 return 4
             avg = tot_sum / max(nb, 1)
             line = f"epoch={epoch} train_loss={avg:.6f} skipped={skipped} "
+            sanitize_bn(model, epoch)
             if (epoch + 1) % args.val_interval == 0:
                 per = evaluate(model, val_pairs, device,
                                args.patch[0], args.patch[2], args.patch)
@@ -327,7 +352,16 @@ def main() -> int:
                 sched.step(v_all)
                 line += f"val_all17={v_all:.6f} val_fg16={v_fg:.6f} "
                 val_history.append({"epoch": epoch, "per_case": per})
-                if v_all >= best:
+                if v_fg == 0.0:
+                    zero_fg_streak += 1
+                else:
+                    zero_fg_streak = 0
+                if zero_fg_streak >= 3:
+                    (out / "DIAGNOSTIC_collapsed").write_text(
+                        f"val fg16==0 for {zero_fg_streak} consecutive "
+                        f"validations (last at epoch {epoch}); aborting\n")
+                    return 4
+                if v_all >= best and v_fg > 0.01:
                     best = v_all
                     torch.save(model.state_dict(), out / "best_model.pth")
                     line += "BEST "
@@ -337,8 +371,15 @@ def main() -> int:
             print(line, flush=True)
 
     torch.save(model.state_dict(), out / "final_model.pth")
+    # final integrity gate: BN stats must be finite before we call this DONE
+    if sanitize_bn(model, args.epoches):
+        (out / "DIAGNOSTIC_bn_still_polluted_at_end").write_text(
+            json.dumps(bn_reset_events[-3:], indent=2) + "\n")
+        return 4
     (out / "val_history.json").write_text(
         json.dumps(val_history, indent=2), encoding="utf-8")
+    (out / "bn_reset_events.json").write_text(
+        json.dumps(bn_reset_events, indent=2), encoding="utf-8")
     # final report: both checkpoints under the LOCKED 64/64 evaluator so the
     # bridge is comparable to W3/E1 numbers without mixing stride conventions
     final_eval = {}

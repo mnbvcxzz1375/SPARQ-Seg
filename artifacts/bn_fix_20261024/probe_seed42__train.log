@@ -1,0 +1,60 @@
+epoch=0 train_loss=2.398099 skipped=0 lr=0.01
+epoch=1 train_loss=2.185479 skipped=0 val_all17=0.013225 val_fg16=0.001289 lr=0.01
+epoch=2 train_loss=2.179781 skipped=0 lr=0.01
+epoch=3 train_loss=2.169364 skipped=0 val_all17=0.063300 val_fg16=0.013899 BEST lr=0.01
+epoch=4 train_loss=2.313553 skipped=0 lr=0.01
+epoch=5 train_loss=2.119865 skipped=0 val_all17=0.078905 val_fg16=0.031252 BEST lr=0.01
+epoch=6 train_loss=2.163207 skipped=0 lr=0.01
+epoch=7 train_loss=2.089871 skipped=0 val_all17=0.077094 val_fg16=0.026991 lr=0.01
+epoch=8 train_loss=2.060336 skipped=0 lr=0.01
+epoch=9 train_loss=2.067298 skipped=0 val_all17=0.103314 val_fg16=0.051613 BEST lr=0.01
+epoch=10 train_loss=2.292734 skipped=0 lr=0.01
+epoch=11 train_loss=2.029821 skipped=0 val_all17=0.072939 val_fg16=0.018350 lr=0.01
+epoch=12 train_loss=2.055063 skipped=0 lr=0.01
+epoch=13 train_loss=2.176130 skipped=0 val_all17=0.075484 val_fg16=0.021372 lr=0.01
+epoch=14 train_loss=1.960766 skipped=0 lr=0.01
+epoch=15 train_loss=1.905048 skipped=0 val_all17=0.062714 val_fg16=0.012860 lr=0.01
+epoch=16 train_loss=1.940943 skipped=0 lr=0.01
+epoch=17 train_loss=2.141397 skipped=0 val_all17=0.112111 val_fg16=0.061839 BEST lr=0.01
+epoch=18 train_loss=2.183195 skipped=0 lr=0.01
+epoch=19 train_loss=2.072477 skipped=0 val_all17=0.074956 val_fg16=0.021040 lr=0.01
+epoch=20 train_loss=1.922353 skipped=0 lr=0.01
+epoch=21 train_loss=1.956977 skipped=0 val_all17=0.145353 val_fg16=0.094859 BEST lr=0.01
+epoch=22 train_loss=2.164769 skipped=0 lr=0.01
+epoch=23 train_loss=2.043973 skipped=0 val_all17=0.181682 val_fg16=0.135029 BEST lr=0.01
+epoch=24 train_loss=2.145882 skipped=0 lr=0.01
+epoch=25 train_loss=1.898195 skipped=0 val_all17=0.090273 val_fg16=0.037690 lr=0.01
+epoch=26 train_loss=2.012242 skipped=0 lr=0.01
+epoch=27 train_loss=2.186736 skipped=0 val_all17=0.105788 val_fg16=0.053370 lr=0.01
+epoch=28 train_loss=2.009915 skipped=0 lr=0.01
+epoch=29 train_loss=1.895762 skipped=0 val_all17=0.063055 val_fg16=0.008244 lr=0.01
+epoch=30 train_loss=2.037561 skipped=0 lr=0.01
+epoch=31 train_loss=1.825581 skipped=0 val_all17=0.171717 val_fg16=0.122178 lr=0.01
+epoch=32 train_loss=2.117232 skipped=0 lr=0.01
+epoch=33 train_loss=2.078458 skipped=0 val_all17=0.136822 val_fg16=0.087122 lr=0.0095
+epoch=34 train_loss=1.958429 skipped=0 lr=0.0095
+epoch=35 train_loss=1.787572 skipped=0 val_all17=0.114655 val_fg16=0.063229 lr=0.0095
+epoch=36 train_loss=2.039447 skipped=0 lr=0.0095
+epoch=37 train_loss=1.925248 skipped=0 val_all17=0.142607 val_fg16=0.092697 lr=0.0095
+epoch=38 train_loss=1.937447 skipped=0 lr=0.0095
+epoch=39 train_loss=2.040431 skipped=0 val_all17=0.131912 val_fg16=0.083556 lr=0.0095
+epoch=40 train_loss=1.840739 skipped=0 lr=0.0095
+epoch=41 train_loss=1.820632 skipped=0 val_all17=0.143096 val_fg16=0.092847 lr=0.0095
+epoch=42 train_loss=1.841276 skipped=0 lr=0.0095
+epoch=43 train_loss=1.867146 skipped=0 val_all17=0.154584 val_fg16=0.104706 lr=0.009025
+epoch=44 train_loss=1.612048 skipped=0 lr=0.009025
+epoch=45 train_loss=1.988545 skipped=0 val_all17=0.223287 val_fg16=0.177676 BEST lr=0.009025
+epoch=46 train_loss=1.755479 skipped=0 lr=0.009025
+epoch=47 train_loss=2.079917 skipped=0 val_all17=0.214228 val_fg16=0.168651 lr=0.009025
+epoch=48 train_loss=1.899660 skipped=0 lr=0.009025
+epoch=49 train_loss=2.090042 skipped=0 val_all17=0.165007 val_fg16=0.114906 lr=0.009025
+epoch=50 train_loss=1.727788 skipped=0 lr=0.009025
+epoch=51 train_loss=2.013800 skipped=0 val_all17=0.212090 val_fg16=0.166112 lr=0.009025
+epoch=52 train_loss=2.007315 skipped=0 lr=0.009025
+epoch=53 train_loss=1.820549 skipped=0 val_all17=0.093953 val_fg16=0.040817 lr=0.009025
+epoch=54 train_loss=2.060268 skipped=0 lr=0.009025
+epoch=55 train_loss=1.860201 skipped=0 val_all17=0.228655 val_fg16=0.182875 BEST lr=0.009025
+epoch=56 train_loss=1.610406 skipped=0 lr=0.009025
+epoch=57 train_loss=1.922655 skipped=0 val_all17=0.275493 val_fg16=0.232061 BEST lr=0.009025
+epoch=58 train_loss=1.685069 skipped=0 lr=0.009025
+epoch=59 train_loss=1.970679 skipped=0 val_all17=0.224048 val_fg16=0.179131 lr=0.009025
