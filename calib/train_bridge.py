@@ -185,6 +185,9 @@ def main() -> int:
     args = ap.parse_args()
 
     out = Path(args.out_dir)
+    if ".." in out.parts:
+        raise RuntimeError("out-dir must not contain '..' components")
+    out = out.resolve()
     if out.exists() and any(out.iterdir()):
         if not args.allow_nonempty:
             print(f"REFUSING non-empty out-dir {out} (bridge policy: no "
@@ -283,6 +286,7 @@ def main() -> int:
         opt, mode="max", factor=0.95, patience=4, min_lr=1e-4)
 
     best = float("-inf")
+    val_history = []
     log = out / "train.log"
     with open(log, "a", encoding="utf-8") as lf:
         for epoch in range(args.epoches):
@@ -322,7 +326,7 @@ def main() -> int:
                 v_fg = float(np.mean([c["fg16"] for c in per]))
                 sched.step(v_all)
                 line += f"val_all17={v_all:.6f} val_fg16={v_fg:.6f} "
-                json.dump(per, open(out / f"val_epoch{epoch:04d}.json", "w"))
+                val_history.append({"epoch": epoch, "per_case": per})
                 if v_all >= best:
                     best = v_all
                     torch.save(model.state_dict(), out / "best_model.pth")
@@ -333,6 +337,8 @@ def main() -> int:
             print(line, flush=True)
 
     torch.save(model.state_dict(), out / "final_model.pth")
+    (out / "val_history.json").write_text(
+        json.dumps(val_history, indent=2), encoding="utf-8")
     # final report: both checkpoints under the LOCKED 64/64 evaluator so the
     # bridge is comparable to W3/E1 numbers without mixing stride conventions
     final_eval = {}

@@ -206,8 +206,12 @@ def main() -> int:
 
     git_sha = ""
     try:
-        git_root = Path(__file__).resolve().parents[2]
-        git_sha = os.popen(f"git -C {git_root} rev-parse HEAD 2>/dev/null").read().strip()
+        import subprocess
+        git_root = str(Path(__file__).resolve().parents[2])
+        r = subprocess.run(["git", "-C", git_root, "rev-parse", "HEAD"],
+                           capture_output=True, text=True, timeout=30,
+                           shell=False)
+        git_sha = r.stdout.strip() if r.returncode == 0 else ""
     except Exception:
         git_sha = ""
     if args.expected_code_sha and git_sha and not git_sha.startswith(args.expected_code_sha):
